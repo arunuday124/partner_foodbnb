@@ -117,7 +117,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     ), //restuarant filteraltion
                 emptyBuilder: (context) => Text('No new Dishes'),
                 itemBuilder: (context, doc) {
-                  final dishData = doc.data();
+                  final dishData = doc.data();//local variable e oi particular list ta present thakbe
                   return _buildMenuItem(
                     dishData,
                     surfaceLight,
