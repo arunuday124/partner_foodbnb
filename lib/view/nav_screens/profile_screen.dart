@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:partner_foodbnb/auth/login.dart';
-import 'package:partner_foodbnb/screens/customerhelp_screen.dart';
-import 'package:partner_foodbnb/screens/edit_profile.dart';
-import 'package:partner_foodbnb/screens/setting_screen.dart';
+import 'package:partner_foodbnb/view/auth_screens/login.dart';
+import 'package:partner_foodbnb/view/ui_screens/customerhelp_screen.dart';
+import 'package:partner_foodbnb/view/ui_screens/edit_profile.dart';
+import 'package:partner_foodbnb/view/ui_screens/setting_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});

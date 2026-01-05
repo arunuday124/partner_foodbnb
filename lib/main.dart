@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:partner_foodbnb/auth/login.dart';
+import 'package:partner_foodbnb/view/auth_screens/login.dart';
 import 'package:partner_foodbnb/firebase_options.dart';
 
 Future<void> main() async {

@@ -1,0 +1,174 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:partner_foodbnb/controller/auth_controller.dart';
+import 'package:partner_foodbnb/view/auth_screens/forget_password.dart';
+import 'package:partner_foodbnb/view/auth_screens/register.dart'; // Import Firebase
+
+class Login extends StatelessWidget {
+  Login({super.key});
+
+  final AuthController ac = Get.put(AuthController());
+
+  // The Login Logic
+  @override
+  Widget build(BuildContext context) {
+    final Color primaryRed = Colors.red.shade400;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40),
+              // LOGO
+              Center(
+                child: CircleAvatar(
+                  radius: 36,
+                  backgroundColor: primaryRed.withValues(),
+                  child: Icon(
+                    Icons.restaurant_menu,
+                    color: primaryRed,
+                    size: 36,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Center(
+                child: Text(
+                  "Welcome Back, Chef 👩‍🍳",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              // EMAIL FIELD
+              _label("Email"),
+              _textField(
+                hint: "Enter email",
+                icon: Icons.person_outline,
+                controller: ac.emailController, // Pass controller
+              ),
+
+              const SizedBox(height: 20),
+
+              // PASSWORD FIELD
+              _label("Password"),
+              _textField(
+                hint: "Enter password",
+                icon: Icons.lock_outline,
+                isPassword: true,
+                controller: ac.passwordController, // Pass controller
+              ),
+
+              // FORGOT PASSWORD
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => ForgetPassword()),
+                    // );
+
+                    Get.to(() => ForgetPassword());
+                  },
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(color: primaryRed),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // LOGIN BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryRed,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: ac.isLoading.value
+                      ? null
+                      : ac.handleLogin, // Connect to logic
+                  child: ac.isLoading.value
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          "Log In",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => const RegisterScreen(),
+                    //   ),
+                    // );
+
+                    Get.to(() => RegisterScreen());
+                  },
+                  child: Text(
+                    "Don’t have an account? Register as Partner",
+                    style: TextStyle(
+                      color: primaryRed,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // UPDATED HELPERS
+  Widget _label(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
+    );
+  }
+
+  Widget _textField({
+    required String hint,
+    required IconData icon,
+    required TextEditingController controller,
+    bool isPassword = false,
+  }) {
+    return TextField(
+      controller: controller, // Linked controller
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        hintText: hint,
+        prefixIcon: Icon(icon, color: Colors.grey),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}

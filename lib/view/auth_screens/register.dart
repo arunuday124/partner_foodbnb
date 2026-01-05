@@ -1,96 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:partner_foodbnb/auth/login.dart';
+import 'package:get/get.dart';
+import 'package:partner_foodbnb/controller/auth_controller.dart';
+import 'package:partner_foodbnb/view/auth_screens/login.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterScreen extends StatelessWidget {
+  RegisterScreen({super.key});
 
-  @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
-  final _nameController = TextEditingController();
-  final _restaurant_namecontroller = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  final _restaurant_address = TextEditingController();
-
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _restaurant_namecontroller.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _restaurant_address.dispose();
-    super.dispose();
-  }
-
+  final AuthController ac = Get.put(AuthController());
   // The Auth Logic
-  Future<void> _registerUser() async {
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Passwords do not match!")));
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      //to store data in firestore
-      await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .set(
-            {
-              "email": _emailController.text.trim(),
-              "name": _nameController.text.trim(),
-              "joined_at":
-                  DateTime.now(), //or we can also give time by Timestamp.now()
-              "uid": FirebaseAuth.instance.currentUser?.uid,
-              "user_type": "restaurant",
-              "address": _restaurant_address.text.trim(),
-              "push_token": "",
-              "restaurant_name": _restaurant_namecontroller.text.trim(),
-              "wallet_balance": 0,
-              "lifetime_earnings": 0,
-            },
-          ); //if we want to auto set use.set() then set the doc using .doc for adding the Id which is required and .add if we want to add on our own .set to set own docs , for using the id we used the currentuser part.
-
-      // Success: Navigate to Login or Home
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Account Registered Successfully")),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Login()),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      String message = "An error occurred";
-      if (e.code == 'weak-password') message = "The password is too weak.";
-      if (e.code == 'email-already-in-use') message = "Email already in use.";
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final Color primaryRed = Colors.red.shade400;
@@ -149,14 +66,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _textField(
                 hint: "Enter your full name",
                 icon: Icons.person_outline,
-                controller: _nameController,
+                controller: ac.nameController,
               ),
               const SizedBox(height: 20),
               _label("Restaurant Name"),
               _textField(
                 hint: "Enter restaurant's full name",
                 icon: Icons.restaurant_rounded,
-                controller: _restaurant_namecontroller,
+                controller: ac.restaurantNamecontroller,
               ),
               const SizedBox(height: 20),
 
@@ -164,7 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _textField(
                 hint: "Enter full Address of Restaurant",
                 icon: Icons.maps_home_work_sharp,
-                controller: _restaurant_address,
+                controller: ac.restaurantAddress,
               ),
               const SizedBox(height: 20),
 
@@ -172,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _textField(
                 hint: "Enter email",
                 icon: Icons.email_outlined,
-                controller: _emailController,
+                controller: ac.regEmailController,
               ),
               const SizedBox(height: 20),
 
@@ -181,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hint: "Create password",
                 icon: Icons.lock_outline,
                 isPassword: true,
-                controller: _passwordController,
+                controller: ac.regPasswordController,
               ),
               const SizedBox(height: 20),
 
@@ -190,7 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hint: "Re-enter password",
                 icon: Icons.lock_outline,
                 isPassword: true,
-                controller: _confirmPasswordController,
+                controller: ac.confirmPasswordController,
               ),
               const SizedBox(height: 30),
 
@@ -204,9 +121,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-
-                  onPressed: _isLoading ? null : _registerUser,
-                  child: _isLoading
+                  // to access value use .value
+                  onPressed: ac.isLoading.value
+                      ? null
+                      : ac.registerUser, //wont access the value so didnot use .value
+                  child: ac.isLoading.value
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text(
                           "Register Now",
@@ -223,10 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Center(
                 child: TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Login()),
-                    );
+                    Get.to(() => Login());
                   },
                   child: Text(
                     "Already a partner? Log In",

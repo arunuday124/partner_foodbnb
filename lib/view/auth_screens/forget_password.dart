@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:partner_foodbnb/auth/login.dart';
+import 'package:get/get.dart';
+import 'package:partner_foodbnb/controller/auth_controller.dart';
+import 'package:partner_foodbnb/view/auth_screens/login.dart';
 
 class ForgetPassword extends StatelessWidget {
-  const ForgetPassword({super.key});
+  ForgetPassword({super.key});
+
+  final AuthController ac = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -17,15 +21,13 @@ class ForgetPassword extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // -------- BACK --------
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Get.back(),
               ),
 
               const SizedBox(height: 30),
 
-              // -------- ICON --------
               Center(
                 child: CircleAvatar(
                   radius: 40,
@@ -36,7 +38,6 @@ class ForgetPassword extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              // -------- TITLE --------
               const Center(
                 child: Text(
                   "Reset your password",
@@ -60,18 +61,19 @@ class ForgetPassword extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // -------- EMAIL / PHONE --------
               _label("Phone or Email"),
               _textField(
+                controller: ac.forgetEmailController,
+
                 hint: "Enter phone number or email",
                 icon: Icons.person_outline,
               ),
 
               const SizedBox(height: 20),
 
-              // -------- NEW PASSWORD --------
               _label("New Password"),
               _textField(
+                controller: ac.forgetPasswordController,
                 hint: "Create new password",
                 icon: Icons.lock_outline,
                 isPassword: true,
@@ -79,9 +81,9 @@ class ForgetPassword extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // -------- CONFIRM PASSWORD --------
               _label("Confirm Password"),
               _textField(
+                controller: ac.confirmPasswordController,
                 hint: "Re-enter new password",
                 icon: Icons.lock_outline,
                 isPassword: true,
@@ -96,7 +98,6 @@ class ForgetPassword extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              // -------- RESET BUTTON --------
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -108,15 +109,8 @@ class ForgetPassword extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Password reset successful"),
-                      ),
-                    );
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => Login()),
-                    );
+                    Get.snackbar('Successful', 'Password reset successful');
+                    Get.to(() => Login());
                   },
                   child: const Text(
                     "Reset Password",
@@ -154,8 +148,10 @@ class ForgetPassword extends StatelessWidget {
     required String hint,
     required IconData icon,
     bool isPassword = false,
+    required TextEditingController controller,
   }) {
     return TextField(
+      controller: TextEditingController(),
       obscureText: isPassword,
       decoration: InputDecoration(
         hintText: hint,

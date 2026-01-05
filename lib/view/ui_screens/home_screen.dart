@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:partner_foodbnb/navigation/earnings_screen.dart';
-import 'package:partner_foodbnb/navigation/menu_screen.dart';
-import '../navigation/orders_screen.dart';
-import '../navigation/profile_screen.dart';
+import 'package:partner_foodbnb/view/nav_screens/earnings_screen.dart';
+import 'package:partner_foodbnb/view/nav_screens/menu_screen.dart';
+import '../nav_screens/orders_screen.dart';
+import '../nav_screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -2,24 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_foodbnb/screens/add_dish.dart';
+import 'package:get/get.dart';
 
-// // Data Model
-// class Dish {
-//   final String name;
-//   final String description;
-//   final String price;
-//   bool isActive; // Not final so we can toggle it
-//   final String category;
-
-//   Dish({
-//     required this.name,
-//     required this.description,
-//     required this.price,
-//     required this.isActive,
-//     required this.category,
-//   });
-// }
+import '../ui_screens/add_dish.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -103,7 +88,7 @@ class _MenuScreenState extends State<MenuScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context, primaryRed), 
+            _buildHeader(context, primaryRed),
             _buildSearchBar(surfaceLight, textSecondary),
             _buildCategoryFilters(primaryRed, surfaceLight),
 
@@ -113,11 +98,15 @@ class _MenuScreenState extends State<MenuScreen> {
                     .collection('Dish')
                     .where(
                       'restaurant_id',
-                      isEqualTo: FirebaseAuth.instance.currentUser?.uid,//ai line ta na dile shob dishes from all shops will come, eta dewa te only current user er dish e show korbe.
+                      isEqualTo: FirebaseAuth
+                          .instance
+                          .currentUser
+                          ?.uid, //ai line ta na dile shob dishes from all shops will come, eta dewa te only current user er dish e show korbe.
                     ), //restuarant filteraltion
                 emptyBuilder: (context) => Text('No new Dishes'),
                 itemBuilder: (context, doc) {
-                  final dishData = doc.data();//local variable e oi particular list ta present thakbe
+                  final dishData = doc
+                      .data(); //dishData ,local variable e oi particular list ta present thakbe
                   return _buildMenuItem(
                     dishData,
                     surfaceLight,
@@ -126,18 +115,6 @@ class _MenuScreenState extends State<MenuScreen> {
                   );
                 },
               ),
-              // child: ListView.builder(
-              //   padding: const EdgeInsets.symmetric(horizontal: 20),
-              //   itemCount: filteredDishes.length,
-              //   itemBuilder: (context, index) {
-              //     return _buildMenuItem(
-              //       filteredDishes[index],
-              //       surfaceLight,
-              //       primaryRed,
-              //       textSecondary,
-              //     );
-              //   },
-              // ),
             ),
           ],
         ),
@@ -145,7 +122,7 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  // --- UI Helper Methods ---
+ 
 
   Widget _buildHeader(BuildContext context, Color primary) {
     return Padding(
@@ -163,10 +140,7 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddDishScreen()),
-              );
+              Get.to(() => AddDishScreen());
             },
             child: Row(
               children: [
@@ -174,10 +148,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 const SizedBox(width: 4),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddDishScreen()),
-                    );
+                    Get.to(() => AddDishScreen());
                   },
                   child: Text(
                     'ADD DISH',
@@ -266,7 +237,7 @@ class _MenuScreenState extends State<MenuScreen> {
         ),
         child: Row(
           children: [
-            // ---------------- IMAGE (LEFT) ----------------
+           
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
@@ -274,7 +245,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 height: 70,
                 color: Colors.grey.shade200,
                 child: Image.asset(
-                  'assets/images/placeholder.png', // you can change later
+                  'assets/images/placeholder.png', 
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return const Icon(
@@ -289,7 +260,6 @@ class _MenuScreenState extends State<MenuScreen> {
 
             const SizedBox(width: 12),
 
-            // ---------------- NAME + DESCRIPTION (MIDDLE) ----------------
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
