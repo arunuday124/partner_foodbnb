@@ -24,7 +24,18 @@ class AuthController extends GetxController {
   final TextEditingController forgetConfirmPasswordController =
       TextEditingController();
 
+  //for edit_profile page
+
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController kitchenNameController = TextEditingController();
+  final TextEditingController aboutCooking = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController kitchenAddressController =
+      TextEditingController();
+
   RxBool isLoading = false.obs;
+  RxBool isAvailable = true.obs;
+  RxBool isAcceptingOrders = true.obs;
 
   final FirebaseFirestore firebase = FirebaseFirestore.instance;
 
@@ -32,8 +43,8 @@ class AuthController extends GetxController {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       // ScaffoldMessenger.of(context).showSnackBar(
       //   const SnackBar(content: Text("Please fill in all fields")),
-      // ); 
-      
+      // );
+
       //get.snackbar instead of snackbar in scaffoldMessenger, no mount and earlier navigation method in Getx ,title for showing msg at top of the app and msg to display the msg that we want after the action
 
       Get.snackbar("Error", "Please fill in all fields");
@@ -62,10 +73,7 @@ class AuthController extends GetxController {
       }
 
       Get.snackbar("Error", errorMessage);
-    } 
-    
-    
-    finally {
+    } finally {
       isLoading.value = false;
     }
   }

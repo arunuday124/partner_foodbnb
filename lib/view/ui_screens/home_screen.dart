@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:partner_foodbnb/controller/home_controller.dart';
 import 'package:partner_foodbnb/view/nav_screens/earnings_screen.dart';
 import 'package:partner_foodbnb/view/nav_screens/menu_screen.dart';
+import 'package:partner_foodbnb/view/nav_screens/orders_screen.dart';
+import 'package:partner_foodbnb/view/nav_screens/profile_screen.dart';
 
-import '../nav_screens/orders_screen.dart';
-import '../nav_screens/profile_screen.dart';
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int selectedIndex = 0;
+class HomeScreen extends StatelessWidget {
+  HomeScreen({super.key});
 
   final List<Widget> pages = [
     OrderScreen(),
@@ -22,38 +16,39 @@ class _HomeScreenState extends State<HomeScreen> {
     ProfileScreen(),
   ];
 
+  final HomeController hc = Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      body: pages[selectedIndex],
+      body: Obx(() => pages[hc.selectedIndex.value]),
 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-        backgroundColor: const Color(0xFF16251C),
-        selectedItemColor: Colors.red[400],
-        unselectedItemColor: Colors.black,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
-            label: "Orders",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_sharp),
-            label: "Menu",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: "Earnings",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
+      bottomNavigationBar: Obx(
+        () => BottomNavigationBar(
+          currentIndex: hc.selectedIndex.value,
+          onTap: (index) {
+            hc.selectedIndex.value = index;
+          },
+          backgroundColor: const Color(0xFF16251C),
+          selectedItemColor: Colors.red[400],
+          unselectedItemColor: Colors.black,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long),
+              label: "Orders",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.menu_book_sharp),
+              label: "Menu",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance_wallet),
+              label: "Earnings",
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          ],
+        ),
       ),
     );
   }

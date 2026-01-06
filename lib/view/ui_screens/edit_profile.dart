@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:partner_foodbnb/controller/auth_controller.dart';
 
-class EditProfile extends StatefulWidget {
-  const EditProfile({super.key});
+class EditProfile extends StatelessWidget {
+  EditProfile({super.key});
 
-  @override
-  State<EditProfile> createState() => _EditProfileState();
-}
-
-class _EditProfileState extends State<EditProfile> {
-  bool isAvailable = true;
+  final AuthController ac = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +74,7 @@ class _EditProfileState extends State<EditProfile> {
                       Text('Full Name'),
                       SizedBox(height: 6),
                       TextField(
+                        controller: ac.fullNameController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -87,6 +85,7 @@ class _EditProfileState extends State<EditProfile> {
                       Text('Kitchen Name (Display Name)'),
                       SizedBox(height: 6),
                       TextField(
+                        controller: ac.kitchenNameController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -97,6 +96,7 @@ class _EditProfileState extends State<EditProfile> {
                       Text('About Your Cooking'),
                       SizedBox(height: 6),
                       TextField(
+                        controller: ac.aboutCooking,
                         maxLines: 4, //max we can add 4 lines here
                         decoration: InputDecoration(
                           hintText:
@@ -134,6 +134,7 @@ class _EditProfileState extends State<EditProfile> {
                       Text('Phone Number'),
                       SizedBox(height: 6),
                       TextField(
+                        controller: ac.phoneNumberController,
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.phone_android_outlined),
                           border: OutlineInputBorder(
@@ -145,6 +146,7 @@ class _EditProfileState extends State<EditProfile> {
                       Text('Kitchen Address'),
                       SizedBox(height: 6),
                       TextField(
+                        controller: ac.kitchenAddressController,
                         maxLines: 3,
                         decoration: InputDecoration(
                           hintText: "ABC,It Bhawan, Agartala.......",
@@ -199,7 +201,7 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       SizedBox(height: 8),
 
-                      const AvailabilitySection(),
+                      AvailabilitySection(),
                     ],
                   ),
                 ),
@@ -212,15 +214,9 @@ class _EditProfileState extends State<EditProfile> {
   }
 }
 
-class AvailabilitySection extends StatefulWidget {
-  const AvailabilitySection({super.key});
-
-  @override
-  State<AvailabilitySection> createState() => _AvailabilitySectionState();
-}
-
-class _AvailabilitySectionState extends State<AvailabilitySection> {
-  bool isAcceptingOrders = true;
+class AvailabilitySection extends StatelessWidget {
+  AvailabilitySection({super.key});
+   final AuthController ac = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -239,11 +235,9 @@ class _AvailabilitySectionState extends State<AvailabilitySection> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Switch(
-                  value: isAcceptingOrders,
+                  value: ac.isAcceptingOrders.value,
                   onChanged: (value) {
-                    setState(() {
-                      isAcceptingOrders = value;
-                    });
+                     ac.isAcceptingOrders.value = value;
                   },
                 ),
               ],
