@@ -39,8 +39,22 @@ class EditProfile extends StatelessWidget {
               ),
               SizedBox(height: 20),
 
-              Center(
-                child: Text("Srija's Kitchen", style: TextStyle(fontSize: 20)),
+              Obx(
+                () => Center(
+                  child: Text(
+                    ac.userData.value['name'] ?? "-",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ),
+
+              Obx(
+                () => Center(
+                  child: Text(
+                    ac.userData.value['ownerName'] ?? "-",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -216,7 +230,7 @@ class EditProfile extends StatelessWidget {
 
 class AvailabilitySection extends StatelessWidget {
   AvailabilitySection({super.key});
-   final AuthController ac = Get.put(AuthController());
+  final AuthController ac = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +251,7 @@ class AvailabilitySection extends StatelessWidget {
                 Switch(
                   value: ac.isAcceptingOrders.value,
                   onChanged: (value) {
-                     ac.isAcceptingOrders.value = value;
+                    ac.isAcceptingOrders.value = value;
                   },
                 ),
               ],
@@ -250,7 +264,6 @@ class AvailabilitySection extends StatelessWidget {
             ),
             SizedBox(height: 8),
 
-            
             Row(
               children: [
                 Expanded(child: timeBox("09:00 AM")),

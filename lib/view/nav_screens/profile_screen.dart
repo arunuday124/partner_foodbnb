@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:partner_foodbnb/controller/auth_controller.dart';
-import 'package:partner_foodbnb/view/auth_screens/login.dart';
 import 'package:partner_foodbnb/view/ui_screens/customerhelp_screen.dart';
 import 'package:partner_foodbnb/view/ui_screens/edit_profile.dart';
 import 'package:partner_foodbnb/view/ui_screens/setting_screen.dart';
@@ -26,12 +25,21 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            const Text(
-              "Srija's Kitchen",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+            Obx(
+              () => Center(
+                child: Text(
+                  ac.userData.value['name'] ?? "-",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+            ),
+
+            Obx(
+              () => Center(
+                child: Text(
+                  ac.userData.value['ownerName'] ?? "-",
+                  style: TextStyle(fontSize: 14),
+                ),
               ),
             ),
 

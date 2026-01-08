@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:partner_foodbnb/view/auth_screens/login.dart';
@@ -41,7 +42,10 @@ class AuthController extends GetxController {
   RxBool isAvailable = true.obs;
   RxBool isAcceptingOrders = true.obs;
 
-  final FirebaseFirestore firebase = FirebaseFirestore.instance;
+  final FirebaseFirestore firebase = FirebaseFirestore.instanceFor(
+    app: Firebase.app(),
+    databaseId: 'firestore-db-foodbnb',
+  );
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   final RxMap userData = {}.obs;
@@ -83,7 +87,6 @@ class AuthController extends GetxController {
       );
       Get.to(() => HomeScreen());
     } on FirebaseAuthException catch (e) {
-      // Handle errors (Wrong password, no user found, etc.)
       String errorMessage = "Login failed";
       if (e.code == 'user-not-found') {
         errorMessage = "No user found for that email.";
@@ -94,6 +97,8 @@ class AuthController extends GetxController {
       }
 
       Get.snackbar("Error", errorMessage);
+    } catch (e) {
+      log(e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -110,9 +115,12 @@ class AuthController extends GetxController {
         email: regEmailController.text.trim(),
         password: regPasswordController.text.trim(),
       );
-
+      final FirebaseFirestore customDB = FirebaseFirestore.instanceFor(
+        app: Firebase.app(),
+        databaseId: "firestore-db-foodbnb",
+      );
       //to store data data in
-      await FirebaseFirestore.instance
+      await customDB
           .collection('moms_kitchens')
           .doc(FirebaseAuth.instance.currentUser?.uid)
           .set({
@@ -141,7 +149,11 @@ class AuthController extends GetxController {
           }); //if we want to auto set use.set() then set the doc using .doc for adding the Id which is required and .add if we want to add on our own .set to set own docs , for using the id we used the currentuser part.
 
       // Success: Navigate to Login or Home
-
+      final users = customDB
+          .collection('moms_kitchens')
+          .doc('5D8QCam2SKZpJ0pgSaZ0T6sz9od2')
+          .get();
+      print(users);
       Get.snackbar('Success', 'Account Registered Successfully');
       Get.to(() => HomeScreen());
     } on FirebaseAuthException catch (e) {
@@ -159,7 +171,6 @@ class AuthController extends GetxController {
     try {
       auth.signOut();
       Get.to(() => Login());
-      
     } catch (e) {
       log(e.toString());
     }

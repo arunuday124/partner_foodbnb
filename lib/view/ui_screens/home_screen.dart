@@ -17,6 +17,7 @@ class HomeScreen extends StatelessWidget {
   ];
 
   final HomeController hc = Get.put(HomeController());
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
