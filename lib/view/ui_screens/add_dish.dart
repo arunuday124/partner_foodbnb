@@ -113,9 +113,11 @@ class AddDishScreen extends StatelessWidget {
                   height: 45,
                   color: Colors.grey[200],
                   alignment: Alignment.center,
-                  child: Text(
-                    "${dmc.currentQuantity.value} ",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Obx(
+                    () => Text(
+                      "${dmc.currentQuantity.value} ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
 

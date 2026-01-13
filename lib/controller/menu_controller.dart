@@ -38,7 +38,7 @@ class DishMenuController extends GetxController {
         'price': int.parse(dishPrice.text.trim()),
         'category': selectedCategory,
         'created_at': DateTime.now(),
-        "qnt_available": currentQuantity,
+        "qnt_available": currentQuantity.value,
         "restaurant_id": FirebaseAuth.instance.currentUser?.uid,
         "image": [],
       });
@@ -46,6 +46,9 @@ class DishMenuController extends GetxController {
       dishDescription.clear();
       dishPrice.clear();
       dishQntAvailable.clear();
+      currentQuantity.value = 0;
+      Get.snackbar('Added', 'Dish added Successfully');
+      Get.back();
     } catch (e) {
       // ScaffoldMessenger.of(
       //   context,

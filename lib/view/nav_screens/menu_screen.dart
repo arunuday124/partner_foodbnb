@@ -32,37 +32,40 @@ class MenuScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundLight,
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context, primaryRed),
-            _buildSearchBar(surfaceLight, textSecondary),
-            _buildCategoryFilters(primaryRed, surfaceLight),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildHeader(context, primaryRed),
+              _buildSearchBar(surfaceLight, textSecondary),
+              _buildCategoryFilters(primaryRed, surfaceLight),
 
-            Expanded(
-              child: FirestoreListView(
-                query: FirebaseFirestore.instance
-                    .collection('Dish')
-                    .where(
-                      'restaurant_id',
-                      isEqualTo: FirebaseAuth
-                          .instance
-                          .currentUser
-                          ?.uid, //ai line ta na dile shob dishes from all shops will come, eta dewa te only current user er dish e show korbe.
-                    ), //restuarant filteraltion
-                emptyBuilder: (context) => Text('No new Dishes'),
-                itemBuilder: (context, doc) {
-                  final dishData = doc
-                      .data(); //dishData ,local variable e oi particular list ta present thakbe
-                  return _buildMenuItem(
-                    dishData,
-                    surfaceLight,
-                    primaryRed,
-                    textSecondary,
-                  );
-                },
+              Expanded(
+                child: FirestoreListView(
+                  query: FirebaseFirestore.instance
+                      .collection('Dish')
+                      .where(
+                        'restaurant_id',
+                        isEqualTo: FirebaseAuth
+                            .instance
+                            .currentUser
+                            ?.uid, //ai line ta na dile shob dishes from all shops will come, eta dewa te only current user er dish e show korbe.
+                      ), //restuarant filteraltion
+                  emptyBuilder: (context) => Text('No new Dishes'),
+                  itemBuilder: (context, doc) {
+                    final dishData = doc
+                        .data(); //dishData ,local variable e oi particular list ta present thakbe
+                    return _buildMenuItem(
+                      dishData,
+                      surfaceLight,
+                      primaryRed,
+                      textSecondary,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -113,7 +116,7 @@ class MenuScreen extends StatelessWidget {
 
   Widget _buildSearchBar(Color surface, Color textSec) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       child: TextField(
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
@@ -176,9 +179,16 @@ class MenuScreen extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: surface,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade300),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withAlpha(25),
+              blurRadius: 5,
+              spreadRadius: 5,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [

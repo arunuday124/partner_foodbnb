@@ -2,9 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:partner_foodbnb/controller/order_controller.dart';
 
 class OrderScreen extends StatelessWidget {
-  const OrderScreen({super.key});
+  OrderScreen({super.key});
+
+  final OrderController oc = Get.put(OrderController());
 
   @override
   Widget build(BuildContext context) {
@@ -38,23 +43,30 @@ class OrderScreen extends StatelessWidget {
           children: [
             _dashboardCard(),
             const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Recents Orders',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
             FirestoreListView(
               shrinkWrap: true,
               query: FirebaseFirestore.instance
-                  .collection('Orders')
+                  .collection('orders')
                   .where(
                     'restaurant_id',
                     isEqualTo: FirebaseAuth.instance.currentUser?.uid,
                   ),
-              emptyBuilder: (context) => Text('No Orders Available'),//when no items to show
+              emptyBuilder: (context) =>
+                  Text('No Orders Available'), //when no items to show
               itemBuilder: (context, doc) {
                 final order = doc.data();
-
-                return _orderCard(
-                  orderId: order['id'],
-                  items: order['food_details'],
-                  status: order['status'],
-                );
+                order['docId'] = doc.id;
+                return _orderCard(orderData: order);
               },
             ),
           ],
@@ -62,8 +74,6 @@ class OrderScreen extends StatelessWidget {
       ),
     );
   }
-
-  
 
   Widget _dashboardCard() {
     return Row(
@@ -84,12 +94,13 @@ class OrderScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+              color: Colors.grey.withAlpha(25),
+              blurRadius: 5,
+              spreadRadius: 5,
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -111,13 +122,7 @@ class OrderScreen extends StatelessWidget {
     );
   }
 
- 
-
-  Widget _orderCard({
-    required String orderId,
-    required List items,
-    required String status,
-  }) {
+  Widget _orderCard({required Map orderData}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -126,23 +131,23 @@ class OrderScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.grey.withAlpha(25),
+            blurRadius: 5,
+            spreadRadius: 5,
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Order $orderId",
+                "Order ${orderData['order_id']}",
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -155,8 +160,8 @@ class OrderScreen extends StatelessWidget {
                   color: Colors.orange.shade100,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  "NEW",
+                child: Text(
+                  orderData['orderStatus'] ?? 'New',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -169,55 +174,60 @@ class OrderScreen extends StatelessWidget {
 
           const Divider(height: 20),
 
-          // Items
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: items
-                .map(
-                  (item) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      "• $item",
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                )
-                .toList(),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: (orderData['items'] ?? []).length,
+            itemBuilder: (context, index) {
+              var item = orderData['items'][index];
+              return Padding(
+                padding: EdgeInsetsGeometry.only(bottom: 4),
+                child: Text(item.toString()),
+              );
+            },
           ),
-
           const SizedBox(height: 16),
 
           // Buttons
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              Visibility(
+                visible: orderData['orderStatus'] != 'rejected',
+                child: Expanded(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: const BorderSide(color: Colors.red),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
+                    onPressed: () {
+                      oc.rejectOrder(orderData);
+                    },
+                    child: const Text("Decline"),
                   ),
-                  onPressed: () {},
-                  child: const Text("Decline"),
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              Visibility(
+                visible: orderData['orderStatus'] != 'accepted',
+                child: Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ),
-                  onPressed: () {},
-                  child: const Text(
-                    "Accept",
-                    style: TextStyle(color: Colors.white),
+                    onPressed: () {
+                      oc.aceptOrder(orderData);
+                    },
+                    child: const Text(
+                      "Accept",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),
