@@ -152,7 +152,7 @@ class Login extends StatelessWidget {
                           height: 50,
                           width: 50,
                         ),
-                        Text('Sign up with Google'),
+                        Text('Sign in with Google'),
                       ],
                     ),
                   ),

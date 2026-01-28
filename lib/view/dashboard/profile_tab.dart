@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:partner_foodbnb/controller/auth_controller.dart';
 import 'package:partner_foodbnb/view/screens/customerhelp_screen.dart';
 import 'package:partner_foodbnb/view/screens/edit_profile.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
@@ -14,6 +19,23 @@ class ProfileScreen extends StatelessWidget {
   RxBool isSound = false.obs;
   RxBool isNotification = false.obs;
 
+  final Rx<File?> localProfileImage = Rx<File?>(null);
+final ImagePicker _picker = ImagePicker();
+
+
+Future<void> pickImage(ImageSource source) async {
+  final XFile? pickedFile = await _picker.pickImage(
+    source: source,
+    imageQuality: 70,
+  );
+
+  if (pickedFile != null) {
+    localProfileImage.value = File(pickedFile.path);
+  }
+}
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,26 +45,43 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 50),
-            Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.red,
-                    child: Icon(Icons.person, size: 40, color: Colors.black),
-                  ),
-                  Positioned(
-                    bottom: -10,
-                    right: -11,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.camera_alt_sharp),
-                      style: IconButton.styleFrom(shadowColor: Colors.grey),
-                    ),
-                  ),
-                ],
-              ),
+          Center(
+  child: Obx(
+    () {
+      final imageUrl = ac.userData['profileImage'];
+      log("Profile image: ${ac.userData['profileImage']}");
+
+
+      return Stack(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: Colors.lightBlue[200],
+            backgroundImage:
+                (imageUrl != null && imageUrl.toString().isNotEmpty)
+                    ? NetworkImage(imageUrl)
+                    : null,
+            child: (imageUrl == null || imageUrl.toString().isEmpty)
+                ? Icon(Icons.person, size: 40, color: Colors.black)
+                : null,
+          ),
+          Positioned(
+            bottom: -10,
+            right: -11,
+            child: IconButton(
+              icon: Icon(Icons.camera_alt_sharp),
+              onPressed: () {
+                // future image picker goes here
+              },
             ),
+          ),
+        ],
+      );
+    },
+  ),
+),
+
+
             Obx(
               () => Center(
                 child: Text(
@@ -67,7 +106,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 //account
                 settingTile(
-                  Icons.edit,
+                  Icons.edit, //
                   Colors.blue,
                   'Account',
                   'Update your personal Details',
@@ -307,4 +346,37 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _showImagePickerSheet(BuildContext context) {
+  Get.bottomSheet(
+    Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Wrap(
+        children: [
+          ListTile(
+            leading: Icon(Icons.camera_alt),
+            title: Text("Camera"),
+            onTap: () {
+              Get.back();
+              pickImage(ImageSource.camera);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.photo_library),
+            title: Text("Gallery"),
+            onTap: () {
+              Get.back();
+              pickImage(ImageSource.gallery);
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 }

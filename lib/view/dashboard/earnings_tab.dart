@@ -11,7 +11,7 @@ class EarningsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.red[400],
         elevation: 0,
         // SpaceBetween used to align back button and title
         title: Row(
@@ -20,9 +20,9 @@ class EarningsScreen extends StatelessWidget {
             const Text(
               'My Earnings',
               style: TextStyle(
-                color: Color(0xFF112117),
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 20,
               ),
             ),
             const SizedBox(width: 24),
@@ -160,7 +160,6 @@ class EarningsScreen extends StatelessWidget {
       ),
     );
   }
-  
 
   // Stats Grid
   Widget _buildStatsGrid() {

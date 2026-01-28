@@ -20,11 +20,15 @@ class OrderScreen extends StatelessWidget {
         elevation: 0,
         title: Text(
           "Welcome Back!",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 12),
+            padding: EdgeInsets.only(right: 12),
             child: Obx(() {
               return Row(
                 children: [
@@ -199,7 +203,7 @@ class OrderScreen extends StatelessWidget {
               return Padding(
                 padding: EdgeInsets.only(bottom: 12),
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(8),

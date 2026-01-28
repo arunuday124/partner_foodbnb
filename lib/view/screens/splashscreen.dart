@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:partner_foodbnb/view/auth_screens/login.dart';
 import 'package:partner_foodbnb/view/screens/home_screen.dart';
 
@@ -11,7 +13,7 @@ class Splashscreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 2)).then((_) {
+    Future.delayed(Duration(seconds: 5)).then((_) {
       if (_auth.currentUser == null) {
         Get.off(() => Login());
       } else {
@@ -26,16 +28,24 @@ class Splashscreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              height: 120,
-              width: 120,
+              height: 100,
+              width: 100,
               decoration: BoxDecoration(
                 color: Colors.deepOrange.shade50,
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(30),
               ),
-              child: Image.asset('', height: 100, width: 100),
+              child: SvgPicture.asset(
+                'assets/images/foodbnb1 (3).svg',
+                colorFilter: ColorFilter.mode(Colors.red, BlendMode.srcIn),
+              ),
+            ),
+            Lottie.network(
+              width: double.infinity,
+
+              'https://lottie.host/5cf55ee1-e42e-4c1a-a7cb-abb7e6d665ff/1QCvKfU8FJ.json',
             ),
 
-            SizedBox(height: 24),
+            SizedBox(height: 4),
 
             Text(
               "Foodbnb Cook Partner",

@@ -1,11 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:partner_foodbnb/controller/menu_controller.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class AddDishScreen extends StatelessWidget {
   AddDishScreen({super.key});
 
   final DishMenuController dmc = Get.put(DishMenuController());
+  final ImagePicker _imagePicker = ImagePicker();
+  final RxString selectedImagePath = ''.obs;
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(source: source);
+      if (image != null) {
+        selectedImagePath.value = image.path;
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to pick image: $e');
+    }
+  }
+
+  void _showImagePickerBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take Photo'),
+                onTap: () {
+                  _pickImage(ImageSource.camera);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.image),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  _pickImage(ImageSource.gallery);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,14 +114,11 @@ class AddDishScreen extends StatelessWidget {
                 ),
                 hintText: 'Enter Price',
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.red,
-                  ), //colour didnt change why?
+                  borderSide: BorderSide(color: Colors.red),
                 ),
               ),
             ),
             SizedBox(height: 30),
-
             DropdownButtonFormField<String>(
               decoration: InputDecoration(border: OutlineInputBorder()),
               items: [
@@ -87,13 +131,10 @@ class AddDishScreen extends StatelessWidget {
                 dmc.selectedCategory = value;
               },
             ),
-
             const SizedBox(height: 20),
-
             Text("Quantity Available"),
             Row(
               children: [
-                // for minus
                 GestureDetector(
                   onTap: () {
                     if (dmc.currentQuantity.value > 0) {
@@ -107,7 +148,6 @@ class AddDishScreen extends StatelessWidget {
                     child: Icon(Icons.remove, color: Colors.white),
                   ),
                 ),
-
                 Container(
                   width: 45,
                   height: 45,
@@ -120,8 +160,6 @@ class AddDishScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                // add
                 GestureDetector(
                   onTap: () {
                     dmc.currentQuantity.value++;
@@ -136,26 +174,38 @@ class AddDishScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 30),
-            // for image placeholder
-            Container(
-              height: 140,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.image, size: 40, color: Colors.grey),
-                  SizedBox(height: 8),
-                  Text("Upload Dish Image"),
-                ],
+            GestureDetector(
+              onTap: () {
+                _showImagePickerBottomSheet(context);
+              },
+              child: Obx(
+                () => Container(
+                  height: 140,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: selectedImagePath.value.isEmpty
+                      ? const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.image, size: 40, color: Colors.grey),
+                            SizedBox(height: 8),
+                            Text("Upload Dish Image"),
+                          ],
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            File(selectedImagePath.value),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                ),
               ),
             ),
-
             const SizedBox(height: 30),
-
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryRed,
@@ -164,7 +214,6 @@ class AddDishScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              // Call _saveDish when clicked
               onPressed: dmc.isLoading.value ? null : dmc.saveDish,
               child: dmc.isLoading.value
                   ? const CircularProgressIndicator(color: Colors.white)

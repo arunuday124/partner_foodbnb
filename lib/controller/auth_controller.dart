@@ -39,6 +39,7 @@ class AuthController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isAvailable = true.obs;
   RxBool isAcceptingOrders = true.obs;
+  RxString profilePhotoUrl = ''.obs;
 
   // final FirebaseFirestore firebase = FirebaseFirestore.instanceFor(
   //   app: Firebase.app(),
@@ -138,14 +139,14 @@ class AuthController extends GetxController {
               "isVeg": "",
               "location": "",
               "priceForOne": '',
-              "profileImage": '',
+              "profileImage": profilePhotoUrl.value,
               'rating': 5,
               'specialties': '',
               'totalOrders': 0,
               "wallet_balance": 0,
               "lifetime_earnings": 0,
               "push_token": "",
-               'orderStatus':'',
+              'orderStatus': '',
               "phone": regPhoneController.text,
               "email": regEmailController.text.trim(),
               "locationName": regRestaurantAddress.text.trim(),
@@ -171,14 +172,14 @@ class AuthController extends GetxController {
               "isVeg": "",
               "location": "",
               "priceForOne": '',
-              "profileImage": '',
+              "profileImage": profilePhotoUrl.value,
               'rating': 5,
               'specialties': '',
               'totalOrders': 0,
               "walletBalance": 0,
               "lifetimeEarnings": 0,
               "pushToken": "",
-              'orderStatus':'',
+              'orderStatus': '',
               "phone": regPhoneController.text,
               "email": regEmailController.text.trim(),
               "locationName": regRestaurantAddress.text.trim(),
@@ -235,8 +236,11 @@ class AuthController extends GetxController {
         nameController.text = user.displayName ?? '';
         regEmailController.text = user.email ?? '';
         regPhoneController.text = user.phoneNumber ?? '';
+        profilePhotoUrl.value = user.photoURL ?? '';
 
         Get.to(() => RegisterScreen(), arguments: uid);
+      } else {
+        Get.offAll(() => HomeScreen());
       }
     } catch (e) {
       log("Google sign in error: $e");
@@ -248,9 +252,9 @@ class AuthController extends GetxController {
 
   void logout() async {
     try {
-      await auth.signOut();
       await GoogleSignIn().signOut();
-      Get.off(() => Login());
+      await auth.signOut();
+      Get.offAll(() => Login());
     } catch (e) {
       log(e.toString());
     }

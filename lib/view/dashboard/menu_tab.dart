@@ -24,7 +24,6 @@ class MenuScreen extends StatelessWidget {
   final DishMenuController dmc = Get.put(DishMenuController());
   @override
   Widget build(BuildContext context) {
-    const Color backgroundLight = Colors.white;
     const Color surfaceLight = Color(0xFFF8F8F8);
     final Color primaryRed = Colors.red.shade400;
     const Color textSecondary = Colors.grey;
@@ -112,17 +111,31 @@ class MenuScreen extends StatelessWidget {
   Widget _buildSearchBar(Color surface, Color textSec) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: TextField(
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          hintText: "Search menu items...",
-          hintStyle: TextStyle(color: textSec),
-          prefixIcon: Icon(Icons.search, color: textSec),
-          fillColor: surface,
-          filled: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withAlpha(25),
+              blurRadius: 5,
+              spreadRadius: 5,
+              offset: Offset(0, 2),
+            ),
+          ],
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: TextField(
+          style: TextStyle(color: Colors.black),
+          decoration: InputDecoration(
+            hintText: "Search menu items...",
+            hintStyle: TextStyle(color: textSec),
+            prefixIcon: Icon(Icons.search, color: textSec),
+            fillColor: surface,
+            filled: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
           ),
         ),
       ),
