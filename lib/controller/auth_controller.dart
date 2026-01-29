@@ -29,7 +29,8 @@ class AuthController extends GetxController {
   final regSpecialityController = TextEditingController(); // Temporary input
   final RxList<String> specialitiesList =
       <String>[].obs; // Store multiple specialities
-
+  final regPanNumberController = TextEditingController();
+  final regFssaiNumberController = TextEditingController();
   //for forget page
   final TextEditingController forgetEmailController = TextEditingController();
 
@@ -46,6 +47,9 @@ class AuthController extends GetxController {
   RxBool isAvailable = true.obs;
   RxBool isAcceptingOrders = true.obs;
   RxString profilePhotoUrl = ''.obs;
+  
+  // Password visibility toggle for create password field
+  RxBool isPasswordVisible = false.obs;
 
   // final FirebaseFirestore firebase = FirebaseFirestore.instanceFor(
   //   app: Firebase.app(),
@@ -158,6 +162,8 @@ class AuthController extends GetxController {
               "locationName": regRestaurantAddress.text.trim(),
               "name": restaurantNamecontroller.text.trim(),
               "ownerName": nameController.text.trim(),
+              "panNumber": regPanNumberController.text.trim(),
+              "fssaiNumber": "zsfhhiouiw8854",
             }); //if we want to auto set or want for specified/fixed/particular document use.set()and set the doc using .doc for adding the Id.
         // .add if we want to create/add on our own, without the need to specify a custom doc Id. ,generates auto id
         //for using the id we used the currentuser part.
@@ -191,6 +197,8 @@ class AuthController extends GetxController {
               "locationName": regRestaurantAddress.text.trim(),
               "name": restaurantNamecontroller.text.trim(),
               "ownerName": nameController.text.trim(),
+              "panNumber": regPanNumberController.text.trim(),
+              "fssaiNumber": "zsfhhiouiw8854",
             }); //if we want to auto set or want for specified/fixed/particular document use.set()and set the doc using .doc for adding the Id.
         // .add if we want to create/add on our own, without the need to specify a custom doc Id. ,generates auto id
         //for using the id we used the currentuser part.

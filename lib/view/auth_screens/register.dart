@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:partner_foodbnb/controller/auth_controller.dart';
 import 'package:partner_foodbnb/view/auth_screens/login.dart';
@@ -184,7 +185,7 @@ class RegisterScreen extends StatelessWidget {
                                   ac.specialitiesList.remove(speciality);
                                 },
                                 backgroundColor: primaryRed,
-                                labelStyle: TextStyle(color: primaryRed),
+                                labelStyle: TextStyle(color: Colors.black),
                               );
                             }).toList(),
                           ),
@@ -192,15 +193,23 @@ class RegisterScreen extends StatelessWidget {
                 ],
               ),
 
+              //pan card number
               const SizedBox(height: 20),
-
               _label("Pan Number"),
               _textField(
                 hint: "Pan Number",
-                icon: Icons.card_giftcard,
-                controller: ac.regEmailController,
+                icon: Icons.credit_card,
+                controller: ac.regPanNumberController,
               ),
 
+              //fssai number
+              // const SizedBox(height: 20),
+              // _label("fssai Number"),
+              // _textField(
+              //   hint: "Fssai Number",
+              //   icon: Icons.credit_card,
+              //   controller: ac.regFssaiNumberController,
+              // ),
               const SizedBox(height: 20),
               _label("Email"),
               _textField(
@@ -215,15 +224,26 @@ class RegisterScreen extends StatelessWidget {
                 hint: "Enter your Phone Number",
                 icon: Icons.phone,
                 controller: ac.regPhoneController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
               ),
 
               const SizedBox(height: 30),
               _label("Create Password"),
-              _textField(
-                hint: "Create password",
-                icon: Icons.lock_outline,
-                isPassword: true,
-                controller: ac.regPasswordController,
+              Obx(
+                () => _textField(
+                  hint: "Create password",
+                  icon: Icons.lock_outline,
+                  isPassword: true,
+                  controller: ac.regPasswordController,
+                  isVisible: ac.isPasswordVisible.value,
+                  onToggleVisibility: () {
+                    ac.isPasswordVisible.value = !ac.isPasswordVisible.value;
+                  },
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -304,13 +324,30 @@ class RegisterScreen extends StatelessWidget {
     required IconData icon,
     required TextEditingController controller,
     bool isPassword = false,
+    VoidCallback? onToggleVisibility,
+    bool? isVisible,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return TextField(
       controller: controller,
-      obscureText: isPassword,
+      obscureText: isPassword && !(isVisible ?? false),
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: Icon(icon, color: Colors.grey),
+        suffixIcon: (isPassword && onToggleVisibility != null)
+            ? IconButton(
+                icon: Icon(
+                  (isVisible ?? false)
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                  color: Colors.grey,
+                ),
+                onPressed: onToggleVisibility,
+              )
+            : null,
         filled: true,
         fillColor: Colors.grey.shade100,
         border: OutlineInputBorder(
