@@ -170,10 +170,12 @@ class EarningsScreen extends StatelessWidget {
   Widget _buildStatsGrid() {
     return Row(
       children: [
-        _buildStatBox(
-          'THIS WEEK',
-          ac.userData.value['weeklyEarning'].toString(),
-          Icons.trending_up,
+        Obx(
+          () => _buildStatBox(
+            'THIS WEEK',
+            ac.userData.value['weeklyEarning'].toString(),
+            Icons.trending_up,
+          ),
         ),
 
         const SizedBox(width: 12),
