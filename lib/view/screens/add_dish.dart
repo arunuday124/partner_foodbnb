@@ -9,13 +9,13 @@ class AddDishScreen extends StatelessWidget {
 
   final DishMenuController dmc = Get.put(DishMenuController());
   final ImagePicker _imagePicker = ImagePicker();
-  final RxString selectedImagePath = ''.obs;
+ 
 
   Future<void> _pickImage(ImageSource source) async {
     try {
       final XFile? image = await _imagePicker.pickImage(source: source);
       if (image != null) {
-        selectedImagePath.value = image.path;
+        dmc.selectedImagePath.value = image.path;
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to pick image: $e');
@@ -186,7 +186,7 @@ class AddDishScreen extends StatelessWidget {
                     color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: selectedImagePath.value.isEmpty
+                  child: dmc.selectedImagePath.value.isEmpty
                       ? const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -198,7 +198,7 @@ class AddDishScreen extends StatelessWidget {
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.file(
-                            File(selectedImagePath.value),
+                            File(dmc.selectedImagePath.value),
                             fit: BoxFit.cover,
                           ),
                         ),

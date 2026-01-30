@@ -13,9 +13,8 @@ class DishMenuController extends GetxController {
 
   String? selectedCategory;
   Rx isLoading = false.obs;
-
   RxInt currentQuantity = 0.obs; // for button
-
+  RxString selectedImagePath = ''.obs; //image for dish
   //for menuscreen searchbar
   final TextEditingController searchbar = TextEditingController();
   final RxInt selectedCategoryIndex = 0.obs;
@@ -42,11 +41,7 @@ class DishMenuController extends GetxController {
         "restaurant_id": FirebaseAuth.instance.currentUser?.uid,
         "image": [],
       });
-      dishnameController.clear();
-      dishDescription.clear();
-      dishPrice.clear();
-      dishQntAvailable.clear();
-      currentQuantity.value = 0;
+      clearDishForm();
       Get.snackbar('Added', 'Dish added Successfully');
       Get.back();
     } catch (e) {
@@ -58,5 +53,15 @@ class DishMenuController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void clearDishForm() {
+    dishnameController.clear();
+    dishDescription.clear();
+    dishPrice.clear();
+    dishQntAvailable.clear();
+    selectedCategory = null;
+    currentQuantity.value = 0;
+    selectedImagePath.value = '';
   }
 }
