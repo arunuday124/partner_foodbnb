@@ -176,18 +176,50 @@ class EarningsScreen extends StatelessWidget {
             Row(
               children: [
                 Obx(
-                  () => _buildStatBox(
-                    'THIS WEEK',
-                    ac.userData.value['weeklyEarning'].toString(),
-                    Icons.trending_up,
+                  () => Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withAlpha(25),
+                            blurRadius: 5,
+                            spreadRadius: 5,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: _buildStatBox(
+                        'THIS WEEK',
+                        ac.userData.value['weeklyEarning'].toString(),
+                        Icons.trending_up,
+                      ),
+                    ),
                   ),
                 ),
 
                 const SizedBox(width: 12),
-                _buildStatBox(
-                  'ORDERS',
-                  ac.userData.value['totalOrders'].toString(),
-                  Icons.shopping_bag,
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withAlpha(25),
+                          blurRadius: 5,
+                          spreadRadius: 5,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: _buildStatBox(
+                      'ORDERS',
+                      ac.userData.value['totalOrders'].toString(),
+                      Icons.shopping_bag,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -225,162 +257,183 @@ class EarningsScreen extends StatelessWidget {
               itemBuilder: (context, doc) {
                 final transactionData = doc.data();
 
-                return Card(
-                  color: Colors.white,
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 2,
-                    vertical: 6,
+                return Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withAlpha(25),
+                        blurRadius: 5,
+                        spreadRadius: 5,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // ICON
-                        Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color:
-                                transactionData['type'] == 'Card' ||
-                                    transactionData['type'] == 'UPI' ||
-                                    transactionData['type'] == 'COD'
-                                ? Colors.red.withValues(alpha: 0.12)
-                                : Colors.blue.withValues(alpha: 0.12),
-                            shape: BoxShape.circle,
+                  child: Card(
+                    color: Colors.white,
+                    // elevation: 2,
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 2,
+                      vertical: 6,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // ICON
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color:
+                                  transactionData['type'] == 'Card' ||
+                                      transactionData['type'] == 'UPI' ||
+                                      transactionData['type'] == 'COD'
+                                  ? Colors.red.withValues(alpha: 0.12)
+                                  : Colors.blue.withValues(alpha: 0.12),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              transactionData['type'] == 'credit' &&
+                                      transactionData['type'] == 'UPI' &&
+                                      transactionData['type'] == 'COD'
+                                  ? Icons.arrow_downward
+                                  : Icons.arrow_upward,
+                              color:
+                                  transactionData['type'] == 'credit' ||
+                                      transactionData['type'] == 'UPI' ||
+                                      transactionData['type'] == 'COD'
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
                           ),
-                          child: Icon(
-                            transactionData['type'] == 'credit' &&
-                                    transactionData['type'] == 'UPI' &&
-                                    transactionData['type'] == 'COD'
-                                ? Icons.arrow_downward
-                                : Icons.arrow_upward,
-                            color:
-                                transactionData['type'] == 'credit' ||
-                                    transactionData['type'] == 'UPI' ||
-                                    transactionData['type'] == 'COD'
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                        ),
 
-                        const SizedBox(width: 12),
+                          const SizedBox(width: 12),
 
-                        // DETAILS
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "₹ ${transactionData['amount']}",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                          // DETAILS
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "₹ ${transactionData['amount']}",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
 
-                              SizedBox(height: 6),
+                                SizedBox(height: 6),
 
-                              Text(
-                                "Order ID: ${transactionData['order_id']}",
-                                style: TextStyle(fontSize: 13),
-                              ),
-
-                              Text(
-                                "Txn ID: ${transactionData['id']}",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                                Text(
+                                  "Order ID: ${transactionData['order_id']}",
+                                  style: TextStyle(fontSize: 13),
                                 ),
-                              ),
 
-                              SizedBox(height: 6),
+                                Text(
+                                  "Txn ID: ${transactionData['id']}",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
 
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: transactionData['status'] == 'paid'
-                                          ? Colors.green
-                                          : Colors.red,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      transactionData['status'].toUpperCase(),
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
+                                SizedBox(height: 6),
+
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
                                         color:
                                             transactionData['status'] == 'paid'
-                                            ? Colors.white
-                                            : Colors.black,
+                                            ? Colors.green
+                                            : Colors.red,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        transactionData['status'].toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              transactionData['status'] ==
+                                                  'paid'
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
                                       ),
                                     ),
-                                  ),
 
-                                  SizedBox(width: 6),
+                                    SizedBox(width: 6),
 
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          transactionData['type'] == 'CARD' ||
-                                              transactionData['type'] ==
-                                                  'UPI' ||
-                                              transactionData['type'] == 'COD'
-                                          ? Colors.blue.withValues(alpha: 0.15)
-                                          : Colors.red.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      transactionData['type'].toUpperCase(),
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
                                         color:
                                             transactionData['type'] == 'CARD' ||
                                                 transactionData['type'] ==
                                                     'UPI' ||
                                                 transactionData['type'] == 'COD'
-                                            ? Colors.blue
-                                            : Colors.red,
+                                            ? Colors.blue.withValues(
+                                                alpha: 0.15,
+                                              )
+                                            : Colors.red.withValues(
+                                                alpha: 0.15,
+                                              ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        transactionData['type'].toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              transactionData['type'] ==
+                                                      'CARD' ||
+                                                  transactionData['type'] ==
+                                                      'UPI' ||
+                                                  transactionData['type'] ==
+                                                      'COD'
+                                              ? Colors.blue
+                                              : Colors.red,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
 
-                              const SizedBox(height: 6),
+                                const SizedBox(height: 6),
 
-                              Text(
-                                transactionData['txn_note'],
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            ],
+                                Text(
+                                  transactionData['txn_note'],
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        Text(
-                          transactionData['time'].toDate().toString().substring(
-                            0,
-                            16,
+                          Text(
+                            transactionData['time']
+                                .toDate()
+                                .toString()
+                                .substring(0, 16),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.black,
+                            ),
                           ),
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );
