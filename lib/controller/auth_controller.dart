@@ -40,6 +40,10 @@ class AuthController extends GetxController {
   Rx<TimeOfDay?> openTime = Rx<TimeOfDay?>(null);
   Rx<TimeOfDay?> closeTime = Rx<TimeOfDay?>(null);
 
+  // Edit profile open and close time
+  Rx<TimeOfDay?> editOpenTime = Rx<TimeOfDay?>(null);
+  Rx<TimeOfDay?> editCloseTime = Rx<TimeOfDay?>(null);
+
   //for forget page
   final TextEditingController forgetEmailController = TextEditingController();
 
@@ -101,6 +105,14 @@ class AuthController extends GetxController {
       editSpecialitiesList.value = userData['specialties'] ?? [];
       editPanController.text = userData['panNumber'] ?? '';
       editEmailController.text = userData['email'] ?? '';
+
+      // Load open and close times
+      if (userData['openTime'] != null && userData['openTime'] != '') {
+        editOpenTime.value = stringToTime(userData['openTime']);
+      }
+      if (userData['closeTime'] != null && userData['closeTime'] != '') {
+        editCloseTime.value = stringToTime(userData['closeTime']);
+      }
 
       log("Got user data: $userData");
     } catch (e) {
@@ -228,10 +240,10 @@ class AuthController extends GetxController {
               "panNumber": regPanNumberController.text.trim(),
               "fssaiNumber": "zsfhhiouiw8854",
               "openTime": openTime.value != null
-                  ? "${openTime.value!.hour.toString().padLeft(2, '0')}:${openTime.value!.minute.toString().padLeft(2, '0')}"
+                  ? timeToString(openTime.value!)
                   : "",
               "closeTime": closeTime.value != null
-                  ? "${closeTime.value!.hour.toString().padLeft(2, '0')}:${closeTime.value!.minute.toString().padLeft(2, '0')}"
+                  ? timeToString(closeTime.value!)
                   : "",
             }); //if we want to auto set or want for specified/fixed/particular document use.set()and set the doc using .doc for adding the Id.
         // .add if we want to create/add on our own, without the need to specify a custom doc Id. ,generates auto id
@@ -324,6 +336,12 @@ class AuthController extends GetxController {
             "specialties": editSpecialitiesList.value,
             'panNumber': editPanController.text.trim(),
             'email': editEmailController.text.trim(),
+            "openTime": editOpenTime.value != null
+                ? timeToString(editOpenTime.value!)
+                : "",
+            "closeTime": editCloseTime.value != null
+                ? timeToString(editCloseTime.value!)
+                : "",
           });
 
       log("updateProfile edit");
@@ -346,6 +364,39 @@ class AuthController extends GetxController {
       log("Password reset email sent");
     } catch (e) {
       log("forgetPaswword exception: $e");
+    }
+  }
+
+  // Helper method to convert TimeOfDay to 12-hour format string
+  String timeToString(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
+  }
+
+  // Helper method to parse time string back to TimeOfDay
+  TimeOfDay? stringToTime(String timeString) {
+    try {
+      final parts = timeString.split(' ');
+      if (parts.length != 2) return null;
+
+      final timeParts = parts[0].split(':');
+      if (timeParts.length != 2) return null;
+
+      int hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+      final period = parts[1];
+
+      if (period == 'PM' && hour != 12) {
+        hour += 12;
+      } else if (period == 'AM' && hour == 12) {
+        hour = 0;
+      }
+
+      return TimeOfDay(hour: hour, minute: minute);
+    } catch (e) {
+      return null;
     }
   }
 }

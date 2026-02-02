@@ -577,9 +577,15 @@ class AvailabilitySection extends StatelessWidget {
 
             Row(
               children: [
-                Expanded(child: timeBox("09:00 AM")),
+                timePickerButton(
+                  label: "Open Time",
+                  selectedTime: ac.editOpenTime,
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: timeBox("06:00 PM")),
+                timePickerButton(
+                  label: "Close Time",
+                  selectedTime: ac.editCloseTime,
+                ),
               ],
             ),
           ],
@@ -589,14 +595,102 @@ class AvailabilitySection extends StatelessWidget {
   }
 
   Widget timeBox(String time) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(12),
+    return Obx(
+      () => GestureDetector(
+        onTap: () async {
+          // Determine if this is open or close time based on the time value
+          final isOpenTime =
+              ac.editOpenTime.value != null &&
+              time == ac.timeToString(ac.editOpenTime.value!);
+
+          final TimeOfDay? picked = await showTimePicker(
+            context: Get.context!,
+            initialTime: isOpenTime
+                ? (ac.editOpenTime.value ?? TimeOfDay.now())
+                : (ac.editCloseTime.value ?? TimeOfDay.now()),
+          );
+
+          if (picked != null) {
+            if (isOpenTime) {
+              ac.editOpenTime.value = picked;
+            } else {
+              ac.editCloseTime.value = picked;
+            }
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade300, width: 1),
+          ),
+          child: Center(
+            child: Text(
+              time,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+        ),
       ),
-      child: Center(
-        child: Text(time, style: const TextStyle(fontWeight: FontWeight.w500)),
+    );
+  }
+}
+
+class timePickerButton extends StatelessWidget {
+  final String label;
+  final Rx<TimeOfDay?> selectedTime;
+  final AuthController ac = Get.put(AuthController());
+
+  timePickerButton({
+    super.key,
+    required this.label,
+    required this.selectedTime,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Obx(
+        () => GestureDetector(
+          onTap: () async {
+            final TimeOfDay? picked = await showTimePicker(
+              context: context,
+              initialTime: selectedTime.value ?? TimeOfDay.now(),
+            );
+            if (picked != null) {
+              selectedTime.value = picked;
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              color: selectedTime.value != null
+                  ? Colors.grey.shade100
+                  : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: selectedTime.value != null
+                    ? Colors.red.shade400
+                    : Colors.grey.shade300,
+                width: selectedTime.value != null ? 2 : 1,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                selectedTime.value != null
+                    ? ac.timeToString(selectedTime.value!)
+                    : label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: selectedTime.value != null
+                      ? Colors.black
+                      : Colors.grey.shade600,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
