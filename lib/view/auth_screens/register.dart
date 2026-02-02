@@ -202,6 +202,154 @@ class RegisterScreen extends StatelessWidget {
                 controller: ac.regPanNumberController,
               ),
 
+              //this is for the open and close time selector
+              const SizedBox(height: 20),
+              _label("Open & Close Time"),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.grey.shade300, width: 1),
+                ),
+                child: Row(
+                  children: [
+                    // Open Time Picker
+                    Expanded(
+                      child: Obx(
+                        () => GestureDetector(
+                          onTap: () async {
+                            final TimeOfDay? picked = await showTimePicker(
+                              context: context,
+                              initialTime: ac.openTime.value ?? TimeOfDay.now(),
+                            );
+                            if (picked != null) {
+                              ac.openTime.value = picked;
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: ac.openTime.value != null
+                                    ? primaryRed
+                                    : Colors.grey.shade300,
+                                width: ac.openTime.value != null ? 2 : 1,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.access_time,
+                                      size: 18,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      "Open Time",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  ac.openTime.value != null
+                                      ? ac.openTime.value!.format(context)
+                                      : "Select Time",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: ac.openTime.value != null
+                                        ? Colors.black
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Close Time Picker
+                    Expanded(
+                      child: Obx(
+                        () => GestureDetector(
+                          onTap: () async {
+                            final TimeOfDay? picked = await showTimePicker(
+                              context: context,
+                              initialTime:
+                                  ac.closeTime.value ?? TimeOfDay.now(),
+                            );
+                            if (picked != null) {
+                              ac.closeTime.value = picked;
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: ac.closeTime.value != null
+                                    ? primaryRed
+                                    : Colors.grey.shade300,
+                                width: ac.closeTime.value != null ? 2 : 1,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.access_time_filled,
+                                      size: 18,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      "Close Time",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  ac.closeTime.value != null
+                                      ? ac.closeTime.value!.format(context)
+                                      : "Select Time",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: ac.closeTime.value != null
+                                        ? Colors.black
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               //fssai number
               // const SizedBox(height: 20),
               // _label("fssai Number"),
