@@ -35,6 +35,11 @@ class AuthController extends GetxController {
 
   final regPanNumberController = TextEditingController();
   final regFssaiNumberController = TextEditingController();
+
+  // Open and close time
+  Rx<TimeOfDay?> openTime = Rx<TimeOfDay?>(null);
+  Rx<TimeOfDay?> closeTime = Rx<TimeOfDay?>(null);
+
   //for forget page
   final TextEditingController forgetEmailController = TextEditingController();
 
@@ -181,6 +186,12 @@ class AuthController extends GetxController {
               "ownerName": nameController.text.trim(),
               "panNumber": regPanNumberController.text.trim(),
               "fssaiNumber": "zsfhhiouiw8854",
+              "openTime": openTime.value != null
+                  ? "${openTime.value!.hour.toString().padLeft(2, '0')}:${openTime.value!.minute.toString().padLeft(2, '0')}"
+                  : "",
+              "closeTime": closeTime.value != null
+                  ? "${closeTime.value!.hour.toString().padLeft(2, '0')}:${closeTime.value!.minute.toString().padLeft(2, '0')}"
+                  : "",
             }); //if we want to auto set or want for specified/fixed/particular document use.set()and set the doc using .doc for adding the Id.
         // .add if we want to create/add on our own, without the need to specify a custom doc Id. ,generates auto id
         //for using the id we used the currentuser part.
@@ -216,6 +227,12 @@ class AuthController extends GetxController {
               "ownerName": nameController.text.trim(),
               "panNumber": regPanNumberController.text.trim(),
               "fssaiNumber": "zsfhhiouiw8854",
+              "openTime": openTime.value != null
+                  ? "${openTime.value!.hour.toString().padLeft(2, '0')}:${openTime.value!.minute.toString().padLeft(2, '0')}"
+                  : "",
+              "closeTime": closeTime.value != null
+                  ? "${closeTime.value!.hour.toString().padLeft(2, '0')}:${closeTime.value!.minute.toString().padLeft(2, '0')}"
+                  : "",
             }); //if we want to auto set or want for specified/fixed/particular document use.set()and set the doc using .doc for adding the Id.
         // .add if we want to create/add on our own, without the need to specify a custom doc Id. ,generates auto id
         //for using the id we used the currentuser part.
