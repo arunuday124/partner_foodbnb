@@ -40,15 +40,10 @@ class AuthController extends GetxController {
   Rx<TimeOfDay?> openTime = Rx<TimeOfDay?>(null);
   Rx<TimeOfDay?> closeTime = Rx<TimeOfDay?>(null);
 
-  // Edit profile open and close time
-  Rx<TimeOfDay?> editOpenTime = Rx<TimeOfDay?>(null);
-  Rx<TimeOfDay?> editCloseTime = Rx<TimeOfDay?>(null);
-
   //for forget page
   final TextEditingController forgetEmailController = TextEditingController();
 
   //for edit_profile
-
   final TextEditingController editFullNameController = TextEditingController();
   final TextEditingController editKitchenNameController =
       TextEditingController();
@@ -63,6 +58,9 @@ class AuthController extends GetxController {
   final RxList<dynamic> editSpecialitiesList = <dynamic>[].obs;
   final TextEditingController editPanController = TextEditingController();
   final TextEditingController editEmailController = TextEditingController();
+  // Edit profile open and close time
+  Rx<TimeOfDay?> editOpenTime = Rx<TimeOfDay?>(null);
+  Rx<TimeOfDay?> editCloseTime = Rx<TimeOfDay?>(null);
 
   RxBool isLoading = false.obs;
   RxBool isAvailable = true.obs;
@@ -80,12 +78,10 @@ class AuthController extends GetxController {
   //
 
   final FirebaseFirestore firebase = FirebaseFirestore.instance;
-
   final FirebaseAuth auth = FirebaseAuth.instance;
   final RxBool isActive = false.obs;
 
   final RxMap userData = {}.obs;
-
   Future<void> getUserData() async {
     try {
       var snapshot = await firebase
