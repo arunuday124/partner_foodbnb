@@ -248,6 +248,7 @@ class AddDishScreen extends StatelessWidget {
                 } else {
                   if (isNew) {
                     dmc.saveDish();
+                    Get.snackbar('Success', 'Dish Added Successfully');
                   } else {
                     dmc.updateDish(dishId);
                   }
