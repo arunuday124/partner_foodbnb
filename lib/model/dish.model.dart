@@ -1,100 +1,115 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FoodItemModel {
-  final String id;
-  final String category;
-  final DateTime createdAt;
+class DishModel {
+  final String dishId;
+  final String dishName;
+  final String category; //mains, desserts, etc
   final String description;
-  final List<String> image;
-  final String name;
-  final int price;
+
+  final String kitchenId;
+  final String kitchenName;
+  final List<String> images; // 👈 array of image URLs
+  final bool isVeg;
+  final List<String> ingredients;
+  final double price;
   final int qntAvailable;
   final int qntTotal;
-  final String restaurantId;
+  final int preparationTime;
+  final double rating;
+  final int ordersCount;
+  final String mealCategory;
+  final DateTime createdAt;
+  final String ownerName;
+  final String ownerProfileImage;
+  final bool isAvailable;
 
-  const FoodItemModel({
-    required this.id,
+  DishModel({
+    required this.dishId,
+    required this.dishName,
     required this.category,
-    required this.createdAt,
     required this.description,
-    required this.image,
-    required this.name,
+
+    required this.kitchenId,
+    required this.kitchenName,
+    required this.images,
+    required this.isVeg,
+    required this.ingredients,
+
     required this.price,
     required this.qntAvailable,
     required this.qntTotal,
-    required this.restaurantId,
+
+    required this.preparationTime,
+    required this.rating,
+    required this.ordersCount,
+    required this.mealCategory,
+
+    required this.createdAt,
+    required this.ownerName,
+    required this.ownerProfileImage,
+    required this.isAvailable,
   });
 
-  factory FoodItemModel.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
-    final data = doc.data()!;
-
-    return FoodItemModel(
-      id: doc.id,
-      category: data['category'] ?? '',
-      createdAt: (data['created_at'] as Timestamp).toDate(),
-      description: data['description'] ?? '',
-      image: List<String>.from(data['image'] ?? []),
-      name: data['name'] ?? '',
-      price: data['price'] ?? 0,
-      qntAvailable: data['qnt_available'] ?? data['qnt_total'] ?? 0,
-      qntTotal: data['qnt_total'] ?? 0,
-      restaurantId: data['restaurant_id'] ?? '',
+  /// Firestore -> Dart
+  factory DishModel.fromMap(Map<String, dynamic> map) {
+    return DishModel(
+      dishId: map['dish_id'] ?? '', //s
+      dishName: map['dish_name'] ?? '', //
+      description: map['description'] ?? '', //
+      category: map['category'] ?? '', //
+      kitchenId: map['kitchen_id'] ?? '', //
+      kitchenName: map['kitchen_name'] ?? 'Unknown', //
+      images: List<String>.from(map['image'] ?? ['']), // 👈 image array
+      isVeg: map['isVeg'] ?? false,
+      ingredients: map['ingredients'] ?? [],
+      price: (map['price'] as num?)?.toDouble() ?? 0.0,
+      qntAvailable: map['qnt_available'] ?? 0,
+      qntTotal: map['qnt_total'] ?? 0,
+      preparationTime: map['preparation_time'] ?? 0,
+      rating: map['rating'] ?? 5,
+      ordersCount: map['orders_count'] ?? 0,
+      mealCategory:
+          map['meal_category'] ??
+          'Lunch', // e.g., "Breakfast", "Lunch", "Dinner",
+      createdAt: (map['created_at'] as Timestamp).toDate(),
+      ownerName: map['owner_name'] ?? 'unknown',
+      ownerProfileImage: map['owner_profile_image'] ?? 'unknown',
+      isAvailable: map['is_available'] ?? false,
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  /// Dart -> Firestore
+
+  Map<String, dynamic> toMap() {
     return {
-      'category': category,
-      'created_at': Timestamp.fromDate(createdAt),
+      'dish_id': dishId,
+      'dish_name': dishName,
       'description': description,
-      'image': image,
-      'name': name,
+      'category': category,
+
+      'kitchen_id': kitchenId,
+      'kitchen_name': kitchenName,
+
+      'image': images,
+
+      'isVeg': isVeg,
+      'ingredients': ingredients,
+
       'price': price,
       'qnt_available': qntAvailable,
       'qnt_total': qntTotal,
-      'restaurant_id': restaurantId,
+
+      'preparation_time': preparationTime,
+      'rating': rating,
+      'orders_count': ordersCount,
+      'meal_category': mealCategory,
+
+      'created_at': Timestamp.fromDate(createdAt),
+
+      'owner_name': ownerName,
+      'owner_profile_image': ownerProfileImage,
+
+      'is_available': isAvailable,
     };
   }
-
-  FoodItemModel copyWith({
-    String? id,
-    String? category,
-    DateTime? createdAt,
-    String? description,
-    List<String>? image,
-    String? name,
-    int? price,
-    int? qntAvailable,
-    int? qntTotal,
-    String? restaurantId,
-  }) {
-    return FoodItemModel(
-      id: id ?? this.id,
-      category: category ?? this.category,
-      createdAt: createdAt ?? this.createdAt,
-      description: description ?? this.description,
-      image: image ?? this.image,
-      name: name ?? this.name,
-      price: price ?? this.price,
-      qntAvailable: qntAvailable ?? this.qntAvailable,
-      qntTotal: qntTotal ?? this.qntTotal,
-      restaurantId: restaurantId ?? this.restaurantId,
-    );
-  }
-
-  @override
-  String toString() {
-    return 'FoodItemModel(id: $id, name: $name, price: $price, qntAvailable: $qntAvailable)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is FoodItemModel && other.id == id;
-  }
-
-  @override
-  int get hashCode => id.hashCode;
 }

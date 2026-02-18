@@ -76,21 +76,21 @@ class RegisterScreen extends StatelessWidget {
               textField(
                 hint: "Enter restaurant's full name",
                 icon: Icons.restaurant_rounded,
-                controller: ac.restaurantNamecontroller,
+                controller: ac.kitchenNamecontroller,
               ),
               const SizedBox(height: 20),
               _label("Restaurant Description"),
               textField(
                 hint: "Enter Restaurant Description",
                 icon: Icons.house_outlined,
-                controller: ac.regRestaurantDesController,
+                controller: ac.regKitchenDesController,
               ),
               const SizedBox(height: 20),
               _label("Restaurant Address"),
               textField(
                 hint: "Enter full Address of Restaurant",
                 icon: Icons.maps_home_work_sharp,
-                controller: ac.regRestaurantAddress,
+                controller: ac.regKitchenAddress,
               ),
 
               //food preferences

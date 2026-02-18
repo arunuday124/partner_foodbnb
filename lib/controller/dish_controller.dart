@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:partner_foodbnb/controller/auth_controller.dart';
 
 class DishMenuController extends GetxController {
   //for adding new dish
@@ -20,6 +21,8 @@ class DishMenuController extends GetxController {
   final TextEditingController searchbar = TextEditingController();
   final RxInt selectedCategoryIndex = 0.obs;
 
+  final AuthController ac = Get.put(AuthController());
+
   Future<void> saveDish() async {
     if (dishnameController.text.isEmpty ||
         dishPrice.text.isEmpty ||
@@ -35,7 +38,7 @@ class DishMenuController extends GetxController {
       final String id = DateTime.now().microsecondsSinceEpoch.toString();
       // 'Dish' collection data create/add to db
       await FirebaseFirestore.instance.collection('dish').doc(id).set({
-        'name': dishnameController.text.trim(),
+        'dish_name': dishnameController.text.trim(),
         'dish_id': id,
         'description': dishDescription.text.trim(),
         'price': int.parse(dishPrice.text.trim()),
@@ -43,8 +46,9 @@ class DishMenuController extends GetxController {
         'created_at': DateTime.now(),
         "qnt_available": currentQuantity.value,
         'qnt_total': currentQuantity.value,
-        "restaurant_id": FirebaseAuth.instance.currentUser?.uid,
-        "image": [],
+        "kitchen_id": FirebaseAuth.instance.currentUser?.uid,
+        "kitchen_name": ac.kitchenNamecontroller.text.trim(),
+        "images": [],
       });
       clearDishForm();
       Get.snackbar('Added', 'Dish added Successfully');

@@ -19,12 +19,12 @@ class AuthController extends GetxController {
   String? selectedPreference;
 
   final nameController = TextEditingController();
-  final restaurantNamecontroller = TextEditingController();
+  final kitchenNamecontroller = TextEditingController();
   final regEmailController = TextEditingController();
   final regPasswordController = TextEditingController();
   final regConfirmPasswordController = TextEditingController();
-  final regRestaurantAddress = TextEditingController();
-  final regRestaurantDesController = TextEditingController();
+  final regKitchenAddress = TextEditingController();
+  final regKitchenDesController = TextEditingController();
   final regPhoneController = TextEditingController();
   final regFoodpreferenceController = TextEditingController();
 
@@ -92,10 +92,10 @@ class AuthController extends GetxController {
       userData.value = snapshot.data() as Map; //snapshot of each doc as map
 
       editFullNameController.text = userData['ownerName'] ?? '';
-      editKitchenNameController.text = userData['name'] ?? '';
+      editKitchenNameController.text = userData['kitcheName'] ?? '';
       editAboutCooking.text = userData['description'] ?? '';
       editPhoneNumberController.text = userData['phone'] ?? '';
-      editKitchenAddressController.text = userData['locationName'] ?? '';
+      editKitchenAddressController.text = userData['kitchenAddress'] ?? '';
       isActive.value = userData['isActive'] ?? false;
       editCuisineController.text = userData['cuisine'] ?? '';
       editSpecialitiesList.value = userData['specialties'] ?? [];
@@ -174,7 +174,7 @@ class AuthController extends GetxController {
                   DateTime.now(), //or we can also give time by using Timestamp.now()
               "cuisine": regCuisineController.text.trim(),
               "deliveryTime": "",
-              "description": regRestaurantDesController.text.trim(),
+              "description": regKitchenDesController.text.trim(),
               "featuredDishImage": "",
               "foodPreference": selectedPreference,
               "location": "",
@@ -189,8 +189,8 @@ class AuthController extends GetxController {
               'orderStatus': '',
               "phone": regPhoneController.text,
               "email": regEmailController.text.trim(),
-              "locationName": regRestaurantAddress.text.trim(),
-              "name": restaurantNamecontroller.text.trim(),
+              "kitchenAddress": regKitchenAddress.text.trim(),
+              "kitchenName": kitchenNamecontroller.text.trim(),
               "ownerName": nameController.text.trim(),
               "panNumber": regPanNumberController.text.trim(),
               "fssaiNumber": "zsfhhiouiw8854",
@@ -215,7 +215,7 @@ class AuthController extends GetxController {
                   DateTime.now(), //or we can also give time by using Timestamp.now()
               "cuisine": regCuisineController.text.trim(),
               "deliveryTime": "",
-              "description": regRestaurantDesController.text.trim(),
+              "description": regKitchenDesController.text.trim(),
               "featuredDishImage": "",
               "foodPreference": selectedPreference,
               "location": "",
@@ -230,8 +230,8 @@ class AuthController extends GetxController {
               'orderStatus': '',
               "phone": regPhoneController.text,
               "email": regEmailController.text.trim(),
-              "locationName": regRestaurantAddress.text.trim(),
-              "name": restaurantNamecontroller.text.trim(),
+              "kitchenAddress": regKitchenAddress.text.trim(),
+              "kitchenName": kitchenNamecontroller.text.trim(),
               "ownerName": nameController.text.trim(),
               "panNumber": regPanNumberController.text.trim(),
               "fssaiNumber": "zsfhhiouiw8854",
@@ -325,8 +325,8 @@ class AuthController extends GetxController {
           .update({
             "phone": editPhoneNumberController.text,
             "description": editAboutCooking.text.trim(),
-            "locationName": editKitchenAddressController.text.trim(),
-            "name": editKitchenNameController.text.trim(),
+            "kitchenAddress": editKitchenAddressController.text.trim(),
+            "kitchenName": editKitchenNameController.text.trim(),
             "ownerName": editFullNameController.text.trim(),
             "cuisine": editCuisineController.text.trim(),
             "specialties": editSpecialitiesList.value,

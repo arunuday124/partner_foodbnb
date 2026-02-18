@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:partner_foodbnb/controller/menu_controller.dart';
+import 'package:partner_foodbnb/controller/dish_controller.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
