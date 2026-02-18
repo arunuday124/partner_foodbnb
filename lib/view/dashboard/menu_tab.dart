@@ -93,7 +93,7 @@ class MenuScreen extends StatelessWidget {
                     query: FirebaseFirestore.instance
                         .collection('dish')
                         .where(
-                          'restaurant_id',
+                          'kitchen_id',
                           isEqualTo: FirebaseAuth.instance.currentUser?.uid,
                         ),
                     emptyBuilder: (context) =>
@@ -266,7 +266,7 @@ class MenuScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    dish['name'] ?? "N/A",
+                    dish['dish_name'] ?? "N/A",
                     style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -279,8 +279,8 @@ class MenuScreen extends StatelessWidget {
                   const SizedBox(height: 4),
 
                   Text(
-                    dish['description'] ??
-                        "-", // if ?? first value is null then it will take second value
+                    dish['description'] ?? "N/A",
+                    // if ?? first value is null then it will take second value
                     style: TextStyle(color: textSec, fontSize: 12),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -313,7 +313,7 @@ class MenuScreen extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    dmc.dishnameController.text = dish['name'];
+                    dmc.dishnameController.text = dish['dish_name'];
                     dmc.dishDescription.text = dish['description'];
                     dmc.dishPrice.text = dish['price'].toString();
                     dmc.selectedCategory.value = dish['category'] ?? '';
