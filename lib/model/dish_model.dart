@@ -8,19 +8,19 @@ class DishModel {
 
   final String kitchenId;
   final String kitchenName;
-  final List<String> images; // 👈 array of image URLs
-  final bool isVeg;
-  final List<String> ingredients;
+  final List images; // 👈 array of image URLs
+  final String preference;
+  final List ingredients;
   final double price;
   final int qntAvailable;
   final int qntTotal;
-  final int preparationTime;
+  final String preparationTime;
   final double rating;
   final int ordersCount;
   final String mealCategory;
   final DateTime createdAt;
   final String ownerName;
-  final String ownerProfileImage;
+  final String ownerprofileImage;
   final bool isAvailable;
 
   DishModel({
@@ -32,7 +32,7 @@ class DishModel {
     required this.kitchenId,
     required this.kitchenName,
     required this.images,
-    required this.isVeg,
+    required this.preference,
     required this.ingredients,
 
     required this.price,
@@ -46,26 +46,26 @@ class DishModel {
 
     required this.createdAt,
     required this.ownerName,
-    required this.ownerProfileImage,
+    required this.ownerprofileImage,
     required this.isAvailable,
   });
 
   /// Firestore -> Dart
   factory DishModel.fromMap(Map<String, dynamic> map) {
     return DishModel(
-      dishId: map['dish_id'] ?? '', //s
-      dishName: map['dish_name'] ?? '', //
-      description: map['description'] ?? '', //
-      category: map['category'] ?? '', //
-      kitchenId: map['kitchen_id'] ?? '', //
-      kitchenName: map['kitchen_name'] ?? 'Unknown', //
+      dishId: map['dish_id'] ?? '',
+      dishName: map['dish_name'] ?? '',
+      description: map['description'] ?? '',
+      category: map['category'] ?? '', //main, starter etc
+      kitchenId: map['kitchen_id'] ?? '',
+      kitchenName: map['kitchen_name'] ?? 'Unknown',
       images: List<String>.from(map['image'] ?? ['']), // 👈 image array
-      isVeg: map['isVeg'] ?? false,
+      preference: map['preference'] ?? 'N/A',
       ingredients: map['ingredients'] ?? [],
       price: (map['price'] as num?)?.toDouble() ?? 0.0,
       qntAvailable: map['qnt_available'] ?? 0,
       qntTotal: map['qnt_total'] ?? 0,
-      preparationTime: map['preparation_time'] ?? 0,
+      preparationTime: map['preparation_time'] ?? 'N/A',
       rating: map['rating'] ?? 5,
       ordersCount: map['orders_count'] ?? 0,
       mealCategory:
@@ -73,8 +73,8 @@ class DishModel {
           'Lunch', // e.g., "Breakfast", "Lunch", "Dinner",
       createdAt: (map['created_at'] as Timestamp).toDate(),
       ownerName: map['owner_name'] ?? 'unknown',
-      ownerProfileImage: map['owner_profile_image'] ?? 'unknown',
-      isAvailable: map['is_available'] ?? false,
+      ownerprofileImage: map['owner_profile_image'] ?? 'unknown',
+      isAvailable: map['is_available'] ?? true,
     );
   }
 
@@ -92,7 +92,7 @@ class DishModel {
 
       'image': images,
 
-      'isVeg': isVeg,
+      'preference': preference,
       'ingredients': ingredients,
 
       'price': price,
@@ -107,7 +107,7 @@ class DishModel {
       'created_at': Timestamp.fromDate(createdAt),
 
       'owner_name': ownerName,
-      'owner_profile_image': ownerProfileImage,
+      'owner_profile_image': ownerprofileImage,
 
       'is_available': isAvailable,
     };

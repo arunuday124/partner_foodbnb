@@ -4,7 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:partner_foodbnb/view/dashboard/orders_tab.dart';
+
+class OrderStatus {
+  static const String pending = 'Pending';
+  static const String preparing = 'Preparing';
+  static const String inTransit = 'InTransit';
+  static const String delivered = 'Delivered';
+  static const String cancelled = 'Cancelled';
+}
 
 class OrderController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -58,7 +65,7 @@ class OrderController extends GetxController {
   }) async {
     try {
       await _firestore.collection('orders').doc(docId).update({
-        "orderStatus": status,
+        "order_status": status,
         "updatedAt": FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -77,7 +84,7 @@ class OrderController extends GetxController {
       onConfirm: () async {
         // Save failure message to Firestore
         await _firestore.collection('orders').doc(docId).update({
-          "orderStatus": OrderStatus.cancelled,
+          "order_status": OrderStatus.cancelled,
           "updatedAt": FieldValue.serverTimestamp(),
           "deliveryMessage": "failed",
         });
@@ -114,7 +121,7 @@ class OrderController extends GetxController {
   void markDelivered(String docId) async {
     // Save success message to Firestore
     await _firestore.collection('orders').doc(docId).update({
-      "orderStatus": OrderStatus.delivered,
+      "order_status": OrderStatus.delivered,
       "updatedAt": FieldValue.serverTimestamp(),
       "deliveryMessage": "success",
     });

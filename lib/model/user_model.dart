@@ -7,7 +7,7 @@ class UserModel {
   final int lifetimeEarnings;
   final String name;
   final String pushToken;
-  final String restaurantName;
+  final String kitchenName;
   final String uid;
   final String userType;
   final int walletBalance;
@@ -19,7 +19,7 @@ class UserModel {
     required this.lifetimeEarnings,
     required this.name,
     required this.pushToken,
-    required this.restaurantName,
+    required this.kitchenName,
     required this.uid,
     required this.userType,
     required this.walletBalance,
@@ -33,14 +33,13 @@ class UserModel {
       lifetimeEarnings: map['lifetime_earnings'] ?? 0,
       name: map['name'] ?? '',
       pushToken: map['push_token'] ?? '',
-      restaurantName: map['restaurant_name'] ?? '',
+      kitchenName: map['kitchen_name'] ?? '',
       uid: map['uid'] ?? '',
       userType: map['user_type'] ?? '',
       walletBalance: map['wallet_balance'] ?? 0,
     );
   }
 
- 
   Map<String, dynamic> toMap() {
     return {
       'address': address,
@@ -49,7 +48,7 @@ class UserModel {
       'lifetime_earnings': lifetimeEarnings,
       'name': name,
       'push_token': pushToken,
-      'restaurant_name': restaurantName,
+      'kitchen_name': kitchenName,
       'uid': uid,
       'user_type': userType,
       'wallet_balance': walletBalance,

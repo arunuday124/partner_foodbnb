@@ -91,23 +91,23 @@ class AuthController extends GetxController {
 
       userData.value = snapshot.data() as Map; //snapshot of each doc as map
 
-      editFullNameController.text = userData['ownerName'] ?? '';
-      editKitchenNameController.text = userData['kitchenName'] ?? '';
+      editFullNameController.text = userData['owner_name'] ?? '';
+      editKitchenNameController.text = userData['kitchen_name'] ?? '';
       editAboutCooking.text = userData['description'] ?? '';
       editPhoneNumberController.text = userData['phone'] ?? '';
-      editKitchenAddressController.text = userData['kitchenAddress'] ?? '';
+      editKitchenAddressController.text = userData['kitchen_address'] ?? '';
       isActive.value = userData['isActive'] ?? false;
       editCuisineController.text = userData['cuisine'] ?? '';
       editSpecialitiesList.value = userData['specialties'] ?? [];
-      editPanController.text = userData['panNumber'] ?? '';
+      editPanController.text = userData['pan_number'] ?? '';
       editEmailController.text = userData['email'] ?? '';
 
       // Load open and close times
-      if (userData['openTime'] != null && userData['openTime'] != '') {
+      if (userData['open_time'] != null && userData['open_time'] != '') {
         editOpenTime.value = stringToTime(userData['openTime']);
       }
-      if (userData['closeTime'] != null && userData['closeTime'] != '') {
-        editCloseTime.value = stringToTime(userData['closeTime']);
+      if (userData['close_time'] != null && userData['close_time'] != '') {
+        editCloseTime.value = stringToTime(userData['close_time']);
       }
 
       log("Got user data: $userData");
@@ -170,34 +170,34 @@ class AuthController extends GetxController {
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .set({
               "uid": FirebaseAuth.instance.currentUser?.uid,
-              "createdAt":
+              "created_at":
                   DateTime.now(), //or we can also give time by using Timestamp.now()
               "cuisine": regCuisineController.text.trim(),
-              "deliveryTime": "",
+              "delivery_time": "",
               "description": regKitchenDesController.text.trim(),
-              "featuredDishImage": "",
-              "foodPreference": selectedPreference,
+              "featured_dish_image": "",
+              "food_preference": selectedPreference,
               "location": "",
-              "priceForOne": '',
-              "profileImage": profilePhotoUrl.value,
+              "price_for_one": '',
+              "profile_image": profilePhotoUrl.value,
               'rating': 5,
               'specialties': specialitiesList.toList(),
-              'totalOrders': 0,
+              'total_orders': 0,
               "wallet_balance": 0,
               "lifetime_earnings": 0,
               "push_token": "",
-              'orderStatus': '',
+              'order_status': '',
               "phone": regPhoneController.text,
               "email": regEmailController.text.trim(),
-              "kitchenAddress": regKitchenAddress.text.trim(),
-              "kitchenName": kitchenNamecontroller.text.trim(),
-              "ownerName": nameController.text.trim(),
-              "panNumber": regPanNumberController.text.trim(),
-              "fssaiNumber": "zsfhhiouiw8854",
-              "openTime": openTime.value != null
+              "kitchen_address": regKitchenAddress.text.trim(),
+              "kitchen_name": kitchenNamecontroller.text.trim(),
+              "owner_name": nameController.text.trim(),
+              "pan_number": regPanNumberController.text.trim(),
+              "fssai_number": "zsfhhiouiw8854",
+              "open_time": openTime.value != null
                   ? "${openTime.value!.hour.toString().padLeft(2, '0')}:${openTime.value!.minute.toString().padLeft(2, '0')}"
                   : "",
-              "closeTime": closeTime.value != null
+              "close_time": closeTime.value != null
                   ? "${closeTime.value!.hour.toString().padLeft(2, '0')}:${closeTime.value!.minute.toString().padLeft(2, '0')}"
                   : "",
             }); //if we want to auto set or want for specified/fixed/particular document use.set()and set the doc using .doc for adding the Id.
@@ -211,34 +211,34 @@ class AuthController extends GetxController {
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .set({
               "uid": FirebaseAuth.instance.currentUser?.uid,
-              "createdAt":
+              "created_at":
                   DateTime.now(), //or we can also give time by using Timestamp.now()
               "cuisine": regCuisineController.text.trim(),
-              "deliveryTime": "",
+              "delivery_time": "",
               "description": regKitchenDesController.text.trim(),
-              "featuredDishImage": "",
-              "foodPreference": selectedPreference,
-              "location": "",
-              "priceForOne": '',
-              "profileImage": profilePhotoUrl.value,
+              "featured_dish_image": "",
+              "food_preference": selectedPreference,
+              "geo_location": "",
+              "price_for_one": '',
+              "profile_image": profilePhotoUrl.value,
               'rating': 5,
               'specialties': specialitiesList.toList(),
-              'totalOrders': 0,
-              "walletBalance": 0,
-              "lifetimeEarnings": 0,
-              "pushToken": "",
-              'orderStatus': '',
+              'total_orders': 0,
+              "wallet_balance": 0,
+              "lifetime_earnings": 0,
+              "push_token": "",
+              'orde_status': '',
               "phone": regPhoneController.text,
               "email": regEmailController.text.trim(),
-              "kitchenAddress": regKitchenAddress.text.trim(),
-              "kitchenName": kitchenNamecontroller.text.trim(),
-              "ownerName": nameController.text.trim(),
-              "panNumber": regPanNumberController.text.trim(),
-              "fssaiNumber": "zsfhhiouiw8854",
-              "openTime": openTime.value != null
+              "kitchen_address": regKitchenAddress.text.trim(),
+              "kitchen_name": kitchenNamecontroller.text.trim(),
+              "owner_name": nameController.text.trim(),
+              "pan_number": regPanNumberController.text.trim(),
+              "fssai_number": "zsfhhiouiw8854",
+              "open_time": openTime.value != null
                   ? timeToString(openTime.value!)
                   : "",
-              "closeTime": closeTime.value != null
+              "close_time": closeTime.value != null
                   ? timeToString(closeTime.value!)
                   : "",
             }); //if we want to auto set or want for specified/fixed/particular document use.set()and set the doc using .doc for adding the Id.
@@ -325,17 +325,17 @@ class AuthController extends GetxController {
           .update({
             "phone": editPhoneNumberController.text,
             "description": editAboutCooking.text.trim(),
-            "kitchenAddress": editKitchenAddressController.text.trim(),
-            "kitchenName": editKitchenNameController.text.trim(),
-            "ownerName": editFullNameController.text.trim(),
+            "kitchen_address": editKitchenAddressController.text.trim(),
+            "kitchen_name": editKitchenNameController.text.trim(),
+            "owner_name": editFullNameController.text.trim(),
             "cuisine": editCuisineController.text.trim(),
             "specialties": editSpecialitiesList.value,
-            'panNumber': editPanController.text.trim(),
+            'pan_number': editPanController.text.trim(),
             'email': editEmailController.text.trim(),
-            "openTime": editOpenTime.value != null
+            "open_time": editOpenTime.value != null
                 ? timeToString(editOpenTime.value!)
                 : "",
-            "closeTime": editCloseTime.value != null
+            "close_time": editCloseTime.value != null
                 ? timeToString(editCloseTime.value!)
                 : "",
           });

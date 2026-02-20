@@ -46,7 +46,7 @@ class DashboardController extends GetxController {
   Future<void> fetchOrderCount() async {
     final snapshot = await firestore
         .collection('orders')
-        .where('restaurant_id', isEqualTo: uid)
+        .where('kitchen_id', isEqualTo: uid)
         .get();
 
     totalOrders.value = snapshot.docs.length;

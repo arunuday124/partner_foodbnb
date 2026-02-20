@@ -163,7 +163,7 @@ class OrderScreen extends StatelessWidget {
               query: FirebaseFirestore.instance
                   .collection('orders')
                   .where(
-                    'kitchenId', //restaurant_id ---->>  kitchenId
+                    'kitchen_id', //restaurant_id ---->>  kitchenId
                     isEqualTo: FirebaseAuth.instance.currentUser?.uid,
                   ),
               emptyBuilder: (context) =>
@@ -211,7 +211,7 @@ class OrderScreen extends StatelessWidget {
         Obx(
           () => _statBox(
             Icons.currency_rupee,
-            ac.userData.value['walletBalance'].toString(),
+            ac.userData.value['wallet_balance'].toString(),
             "Revenue",
           ),
         ),
@@ -289,15 +289,15 @@ class OrderScreen extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: _getStatusBackgroundColor(orderData['orderStatus']),
+                  color: _getStatusBackgroundColor(orderData['order_status']),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  orderData['orderStatus'] ?? 'New',
+                  orderData['order_status'] ?? 'New',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: _getStatusTextColor(orderData['orderStatus']),
+                    color: _getStatusTextColor(orderData['order_status']),
                   ),
                 ),
               ),
@@ -377,12 +377,12 @@ class OrderScreen extends StatelessWidget {
             final message =
                 oc.deliveryMessages[orderData['docId']] ??
                 orderData['deliveryMessage'];
-            final status = orderData['orderStatus'];
+            final status = orderData['order_status'];
 
             // Only show message for delivered or cancelled orders
             if (message == null ||
-                (status != OrderStatus.delivered &&
-                    status != OrderStatus.cancelled)) {
+                (status != order_status.delivered &&
+                    status != order_status.cancelled)) {
               return const SizedBox();
             }
 
@@ -436,15 +436,15 @@ class OrderScreen extends StatelessWidget {
 
   Color _getStatusBackgroundColor(String? status) {
     switch (status) {
-      case OrderStatus.pending:
+      case order_status.pending:
         return Colors.blue.shade100;
-      case OrderStatus.preparing:
+      case order_status.preparing:
         return Colors.orange.shade100;
-      case OrderStatus.inTransit:
+      case order_status.inTransit:
         return Colors.purple.shade100;
-      case OrderStatus.delivered:
+      case order_status.delivered:
         return Colors.green.shade100;
-      case OrderStatus.cancelled:
+      case order_status.cancelled:
         return Colors.red.shade100;
       default:
         return Colors.grey.shade100;
@@ -453,15 +453,15 @@ class OrderScreen extends StatelessWidget {
 
   Color _getStatusTextColor(String? status) {
     switch (status) {
-      case OrderStatus.pending:
+      case order_status.pending:
         return Colors.blue.shade700;
-      case OrderStatus.preparing:
+      case order_status.preparing:
         return Colors.orange.shade700;
-      case OrderStatus.inTransit:
+      case order_status.inTransit:
         return Colors.purple.shade700;
-      case OrderStatus.delivered:
+      case order_status.delivered:
         return Colors.green.shade700;
-      case OrderStatus.cancelled:
+      case order_status.cancelled:
         return Colors.red.shade700;
       default:
         return Colors.grey.shade700;
@@ -469,10 +469,10 @@ class OrderScreen extends StatelessWidget {
   }
 
   Widget _orderActions(Map orderData) {
-    final String status = orderData['orderStatus'];
-    final String docId = orderData['docId'];
+    final String status = orderData['order_status'] ?? '';
+    final String docId = orderData['docId'] ?? '';
 
-    if (status == OrderStatus.delivered || status == OrderStatus.cancelled) {
+    if (status == order_status.delivered || status == order_status.cancelled) {
       return const SizedBox();
     }
 
@@ -486,14 +486,14 @@ class OrderScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
             onPressed: () {
-              if (status == OrderStatus.inTransit) {
+              if (status == order_status.inTransit) {
                 oc.failedDelivery(docId);
               } else {
                 oc.confirmCancel(docId);
               }
             },
             child: Text(
-              status == OrderStatus.inTransit ? "Failed to Deliver" : "Reject",
+              status == order_status.inTransit ? "Failed to Deliver" : "Reject",
             ),
           ),
         ),
@@ -507,18 +507,18 @@ class OrderScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
             onPressed: () {
-              if (status == OrderStatus.pending) {
+              if (status == order_status.pending) {
                 oc.acceptOrder(docId);
-              } else if (status == OrderStatus.preparing) {
+              } else if (status == order_status.preparing) {
                 oc.foodPrepared(docId);
-              } else if (status == OrderStatus.inTransit) {
+              } else if (status == order_status.inTransit) {
                 oc.markDelivered(docId);
               }
             },
             child: Text(
-              status == OrderStatus.pending
+              status == order_status.pending
                   ? "Accept"
-                  : status == OrderStatus.preparing
+                  : status == order_status.preparing
                   ? "Food Prepared"
                   : "Marked as Delivered",
               style: const TextStyle(color: Colors.white),
@@ -530,7 +530,7 @@ class OrderScreen extends StatelessWidget {
   }
 }
 
-class OrderStatus {
+class order_status {
   static const pending = "Pending";
   static const preparing = "Preparing";
   static const inTransit = "InTransit";
