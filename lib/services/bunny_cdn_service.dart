@@ -30,7 +30,7 @@ class BunnyCdnService {
   // ─── Pull zone URL (public CDN URL for displaying images) ──────────────────
   // BunnyCDN panel → Pull Zones → your zone linked to foodbnb-images storage
   // Typically: https://<your-pull-zone-name>.b-cdn.net
-  static const String _pullZoneUrl = 'https://foodbnb-images.b-cdn.net';
+  static const String _pullZoneUrl = 'https://foodbnb-global.b-cdn.net';
 
   // ─── Singleton setup ───────────────────────────────────────────────────────
   BunnyCdnService._();
