@@ -9,6 +9,7 @@ import 'package:partner_foodbnb/view/auth_screens/login.dart';
 import 'package:partner_foodbnb/view/auth_screens/register.dart';
 import 'package:partner_foodbnb/view/screens/home_screen.dart';
 import 'package:partner_foodbnb/services/bunny_cdn_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class AuthController extends GetxController {
@@ -65,6 +66,7 @@ class AuthController extends GetxController {
   Rx<TimeOfDay?> editCloseTime = Rx<TimeOfDay?>(null);
 
   RxString selectedProfileImagePath = ''.obs;
+  RxString selectedShopImagePath = ''.obs;
 
   RxBool isLoading = false.obs;
   RxBool isAvailable = true.obs;
@@ -167,6 +169,19 @@ class AuthController extends GetxController {
           email: regEmailController.text.trim(),
           password: regPasswordController.text.trim(),
         );
+        // Upload shop image if selected
+        String shopImageUrl = '';
+        if (selectedShopImagePath.value.isNotEmpty) {
+          try {
+            shopImageUrl = await BunnyCdnService.instance.uploadShopImage(
+              File(selectedShopImagePath.value),
+            );
+          } catch (e) {
+            log('Shop image upload error: $e');
+            Get.snackbar('Warning', 'Shop image upload failed: $e');
+          }
+        }
+
         final FirebaseFirestore customDB = FirebaseFirestore.instance;
         //to store data data in
         await customDB
@@ -179,11 +194,11 @@ class AuthController extends GetxController {
               "cuisine": regCuisineController.text.trim(),
               "delivery_time": "",
               "description": regKitchenDesController.text.trim(),
-              "featured_dish_image": "",
+              "featured_dish_image": shopImageUrl,
               "food_preference": selectedPreference,
               "location": "",
               "price_for_one": '',
-              "profile_image": profilePhotoUrl.value,
+              "profile_image": "",
               'rating': 5,
               'specialties': specialitiesList.toList(),
               'total_orders': 0,
@@ -200,15 +215,28 @@ class AuthController extends GetxController {
               "pan_number": regPanNumberController.text.trim(),
               "fssai_number": "zsfhhiouiw8854",
               "open_time": openTime.value != null
-                  ? "${openTime.value!.hour.toString().padLeft(2, '0')}:${openTime.value!.minute.toString().padLeft(2, '0')}"
+                  ? timeToString(openTime.value!)
                   : "",
               "close_time": closeTime.value != null
-                  ? "${closeTime.value!.hour.toString().padLeft(2, '0')}:${closeTime.value!.minute.toString().padLeft(2, '0')}"
+                  ? timeToString(closeTime.value!)
                   : "",
             }); //if we want to auto set or want for specified/fixed/particular document use.set()and set the doc using .doc for adding the Id.
         // .add if we want to create/add on our own, without the need to specify a custom doc Id. ,generates auto id
         //for using the id we used the currentuser part.
       } else {
+        // Upload shop image if selected
+        String shopImageUrl = '';
+        if (selectedShopImagePath.value.isNotEmpty) {
+          try {
+            shopImageUrl = await BunnyCdnService.instance.uploadShopImage(
+              File(selectedShopImagePath.value),
+            );
+          } catch (e) {
+            log('Shop image upload error: $e');
+            Get.snackbar('Warning', 'Shop image upload failed: $e');
+          }
+        }
+
         final FirebaseFirestore customDB = FirebaseFirestore.instance;
         //to store data data in
         await customDB
@@ -221,11 +249,11 @@ class AuthController extends GetxController {
               "cuisine": regCuisineController.text.trim(),
               "delivery_time": "",
               "description": regKitchenDesController.text.trim(),
-              "featured_dish_image": "",
+              "featured_dish_image": shopImageUrl,
               "food_preference": selectedPreference,
               "geo_location": "",
               "price_for_one": '',
-              "profile_image": profilePhotoUrl.value,
+              "profile_image": "",
               'rating': 5,
               'specialties': specialitiesList.toList(),
               'total_orders': 0,
@@ -355,7 +383,7 @@ class AuthController extends GetxController {
         "kitchen_name": editKitchenNameController.text.trim(),
         "owner_name": editFullNameController.text.trim(),
         "cuisine": editCuisineController.text.trim(),
-        "specialties": editSpecialitiesList.value,
+        "specialties": editSpecialitiesList.toList(),
         'pan_number': editPanController.text.trim(),
         'email': editEmailController.text.trim(),
         "open_time": editOpenTime.value != null
@@ -433,6 +461,22 @@ class AuthController extends GetxController {
       return TimeOfDay(hour: hour, minute: minute);
     } catch (e) {
       return null;
+    }
+  }
+
+  Future<void> pickShopImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: source,
+        imageQuality: 70,
+      );
+      if (pickedFile != null) {
+        selectedShopImagePath.value = pickedFile.path;
+      }
+    } catch (e) {
+      log('Pick image error: $e');
+      Get.snackbar('Error', 'Failed to pick image');
     }
   }
 }

@@ -25,6 +25,7 @@ class BunnyCdnService {
   // ─── Folder paths inside the storage zone ──────────────────────────────────
   static const String _dishImagePath = 'images/dish_image/';
   static const String _profilesPath = 'images/profile_image/';
+  static const String _featuredImagePath = 'images/featured_image/';
 
   // ─── Pull zone URL (public CDN URL for displaying images) ──────────────────
   // BunnyCDN panel → Pull Zones → your zone linked to foodbnb-images storage
@@ -53,6 +54,15 @@ class BunnyCdnService {
     await _uploadWithRegionDetect(fileName, bytes, _profilesPath);
     // Return the pull-zone URL (publicly accessible via CDN)
     return '$_pullZoneUrl/$_profilesPath$fileName';
+  }
+
+  /// Uploads a shop image and returns its public CDN (pull zone) URL.
+  Future<String> uploadShopImage(File file) async {
+    final fileName = _uniqueFileName(file);
+    final bytes = await file.readAsBytes();
+    await _uploadWithRegionDetect(fileName, bytes, _featuredImagePath);
+    // Return the pull-zone URL (publicly accessible via CDN)
+    return '$_pullZoneUrl/$_featuredImagePath$fileName';
   }
 
   // ─── Core upload — tries every regional endpoint until one succeeds ────────
