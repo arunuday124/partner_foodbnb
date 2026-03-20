@@ -23,6 +23,9 @@ class OrderController extends GetxController {
   // Track delivery messages for each order
   RxMap<String, String> deliveryMessages = <String, String>{}.obs;
 
+  // Track the selected order type (Orders vs Subscribed)
+  RxString selectedOrderType = 'Orders'.obs;
+
   // ---------------- ONLINE / OFFLINE ----------------
 
   Future<void> updateIsActive(bool value) async {
