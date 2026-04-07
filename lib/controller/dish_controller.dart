@@ -188,10 +188,18 @@ class DishMenuController extends GetxController {
   }
 
   Future<void> saveDish() async {
-    if (dishnameController.text.isEmpty ||
-        dishPrice.text.isEmpty ||
-        selectedCategory.value.isEmpty) {
-      Get.snackbar('Error', 'Please fill all required fields');
+    if (dishnameController.text.trim().isEmpty ||
+        dishPrice.text.trim().isEmpty ||
+        selectedCategory.value.isEmpty ||
+        preparationTimeInput.text.trim().isEmpty ||
+        currentQuantity.value <= 0) {
+      Get.snackbar(
+        'Required Fields',
+        'Please fill Dish Name, Price, Category, Prep Time, and ensure Quantity > 0',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade800,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -277,6 +285,21 @@ class DishMenuController extends GetxController {
   }
 
   Future<void> updateDish(String id) async {
+    if (dishnameController.text.trim().isEmpty ||
+        dishPrice.text.trim().isEmpty ||
+        selectedCategory.value.isEmpty ||
+        preparationTimeInput.text.trim().isEmpty ||
+        currentQuantity.value <= 0) {
+      Get.snackbar(
+        'Required Fields',
+        'Please fill Dish Name, Price, Category, Prep Time, and ensure Quantity > 0',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade800,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     try {
       isLoading.value = true;
 

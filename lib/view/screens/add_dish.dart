@@ -190,13 +190,22 @@ class AddDishScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Dish Name",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
+            Row(
+              children: [
+                const Text(
+                  "Dish Name",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(" *",
+                    style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
+              ],
             ),
             SizedBox(height: 8),
             TextField(
@@ -237,13 +246,22 @@ class AddDishScreen extends StatelessWidget {
               maxLines: 3,
             ),
             SizedBox(height: 20),
-            const Text(
-              "Price",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
+            Row(
+              children: [
+                const Text(
+                  "Price",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(" *",
+                    style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
+              ],
             ),
             SizedBox(height: 8),
             TextField(
@@ -262,13 +280,22 @@ class AddDishScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            const Text(
-              "Category",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
+            Row(
+              children: [
+                const Text(
+                  "Category",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(" *",
+                    style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
+              ],
             ),
             SizedBox(height: 8),
             Obx(
@@ -495,13 +522,22 @@ class AddDishScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             //preparation time
-            const Text(
-              "Preparation Time",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
+            Row(
+              children: [
+                const Text(
+                  "Preparation Time",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(" *",
+                    style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
+              ],
             ),
             TextField(
               controller: dmc.preparationTimeInput,
@@ -520,13 +556,22 @@ class AddDishScreen extends StatelessWidget {
             SizedBox(height: 8),
 
             //quantity available
-            const Text(
-              "Quantity Available",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
+            Row(
+              children: [
+                const Text(
+                  "Quantity Available",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(" *",
+                    style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
+              ],
             ),
             SizedBox(height: 8),
             Row(

@@ -1771,11 +1771,41 @@ class _ShakingEmojiState extends State<_ShakingEmoji>
 
     // Creates a sequence that rotates left, then right, then centers
     _animation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 0.25).chain(CurveTween(curve: Curves.easeOut)), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 0.25, end: -0.2).chain(CurveTween(curve: Curves.easeInOut)), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: -0.2, end: 0.15).chain(CurveTween(curve: Curves.easeInOut)), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: 0.15, end: -0.1).chain(CurveTween(curve: Curves.easeInOut)), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: -0.1, end: 0.0).chain(CurveTween(curve: Curves.easeIn)), weight: 1),
+      TweenSequenceItem(
+        tween: Tween(
+          begin: 0.0,
+          end: 0.25,
+        ).chain(CurveTween(curve: Curves.easeOut)),
+        weight: 1,
+      ),
+      TweenSequenceItem(
+        tween: Tween(
+          begin: 0.25,
+          end: -0.2,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 2,
+      ),
+      TweenSequenceItem(
+        tween: Tween(
+          begin: -0.2,
+          end: 0.15,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 2,
+      ),
+      TweenSequenceItem(
+        tween: Tween(
+          begin: 0.15,
+          end: -0.1,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 2,
+      ),
+      TweenSequenceItem(
+        tween: Tween(
+          begin: -0.1,
+          end: 0.0,
+        ).chain(CurveTween(curve: Curves.easeIn)),
+        weight: 1,
+      ),
     ]).animate(_controller);
 
     // Option 1: Loop forever

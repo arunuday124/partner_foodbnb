@@ -15,6 +15,7 @@ class WithdrawPageState extends State<WithdrawPage>
     with SingleTickerProviderStateMixin {
   // Tab controller for UPI / Bank
   late TabController tabController;
+  //
 
   // Theme
   final Color primaryRed = const Color(0xFFEF5350);
@@ -162,7 +163,7 @@ class WithdrawPageState extends State<WithdrawPage>
     );
   }
 
-  // ── Balance Banner ────────────────────────────────────────────────────────
+  // ── Balance Banner  ────────────────────────────────────────────────────────
   Widget buildBalanceBanner() {
     return Container(
       width: double.infinity,
