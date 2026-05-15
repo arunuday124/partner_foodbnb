@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swipe_refresh/swipe_refresh.dart';
 import 'package:partner_foodbnb/controller/order_controller.dart';
+import 'package:partner_foodbnb/controller/upcoming_preparation_controller.dart';
 
 import 'package:partner_foodbnb/controller/auth_controller.dart';
 import 'package:partner_foodbnb/controller/order_dashboard_controller.dart';
@@ -14,6 +15,9 @@ class OrderScreen extends StatelessWidget {
   final OrderController oc = Get.put(OrderController());
   final DashboardController dc = Get.put(DashboardController());
   final AuthController ac = Get.put(AuthController());
+  final UpcomingPreparationController upc = Get.put(
+    UpcomingPreparationController(),
+  );
 
   static const _kPrimary = Color(0xFFEF5350); // Red shade 400
   static const _kRadius = 16.0;
@@ -127,40 +131,51 @@ class OrderScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('orders')
-                .where(
-                  'kitchen_id',
-                  isEqualTo: FirebaseAuth.instance.currentUser?.uid,
-                )
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildLoadingState();
+          Obx(() {
+            // ── SUBSCRIBED TAB ───────────────────────────────────────────
+            if (oc.selectedOrderType.value == 'Subscribed') {
+              if (upc.isLoading.value) return _buildLoadingState();
+              final meals = upc.upcomingMeals;
+              if (meals.isEmpty) {
+                return _buildSubscriptionEmptyState();
               }
-              return Obx(() {
-                // Filter based on selectedOrderType
-                final selectedType = oc.selectedOrderType.value;
-                final filteredDocs = snapshot.data!.docs.where((doc) {
+              return Column(
+                children: [
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: meals.length,
+                    itemBuilder: (context, index) =>
+                        _subscriptionMealCard(meals[index]),
+                  ),
+                ],
+              );
+            }
+
+            // ── ORDERS TAB ───────────────────────────────────────────────
+            return StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('orders')
+                  .where(
+                    'kitchen_id',
+                    isEqualTo: FirebaseAuth.instance.currentUser?.uid,
+                  )
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return _buildLoadingState();
+                }
+                final filteredDocs = (snapshot.data?.docs ?? []).where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
                   final isSub =
                       data['is_subscription'] == true ||
                       data['order_type'] == 'subscription' ||
                       data['type'] == 'subscription';
-
-                  if (selectedType == 'Subscribed') {
-                    return isSub;
-                  } else {
-                    return !isSub;
-                  }
+                  return !isSub;
                 }).toList();
 
-                if (filteredDocs.isEmpty) {
-                  return _buildEmptyState();
-                }
+                if (filteredDocs.isEmpty) return _buildEmptyState();
 
-                // Sort client-side by created_at descending (newest first)
                 final allDocs = filteredDocs
                   ..sort((a, b) {
                     final aData = a.data() as Map<String, dynamic>;
@@ -176,7 +191,6 @@ class OrderScreen extends StatelessWidget {
                     return 0;
                   });
 
-                // Show only top 5
                 final docs = allDocs.take(5).toList();
 
                 return Column(
@@ -193,7 +207,6 @@ class OrderScreen extends StatelessWidget {
                         return _orderCard(orderData: order);
                       },
                     ),
-                    // Show "See All" footer if there are more than 5
                     if (allDocs.length > 5)
                       Padding(
                         padding: const EdgeInsets.only(top: 4, bottom: 8),
@@ -225,9 +238,9 @@ class OrderScreen extends StatelessWidget {
                       ),
                   ],
                 );
-              });
-            },
-          ),
+              },
+            );
+          }),
         ],
       ),
     );
@@ -430,6 +443,435 @@ class OrderScreen extends StatelessWidget {
     );
   }
 
+  // ─── Subscription Empty State ────────────────────────────────────────────────
+
+  Widget _buildSubscriptionEmptyState() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.only(top: 40),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(_kRadius),
+          boxShadow: _kCardShadow,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.subscriptions_rounded,
+                size: 48,
+                color: Colors.deepPurple.shade400,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'No Upcoming Subscriptions',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A2E),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Subscription meal cards appear here\n1 hour before scheduled delivery time.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF9E9E9E),
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Subscription Meal Card ───────────────────────────────────────────────────
+
+  Widget _subscriptionMealCard(UpcomingMeal meal) {
+    // Live countdown in seconds
+    final now = DateTime.now();
+    final diff = meal.scheduledDateTime.difference(now);
+    final totalSeconds = diff.inSeconds;
+    final isUrgent = totalSeconds <= 15 * 60; // urgent inside last 15 min
+    final isPast = totalSeconds < 0;
+
+    final headerColor = isPast
+        ? Colors.grey.shade100
+        : isUrgent
+        ? Colors.red.shade50
+        : Colors.deepPurple.shade50;
+    final accentColor = isPast
+        ? Colors.grey.shade500
+        : isUrgent
+        ? const Color(0xFFEF5350)
+        : Colors.deepPurple.shade400;
+
+    // Format as MM:SS (or HH:MM:SS for > 60 min)
+    String countdownText;
+    if (isPast) {
+      countdownText = 'Delivery time passed';
+    } else if (totalSeconds == 0) {
+      countdownText = 'Deliver now!';
+    } else {
+      final absSec = totalSeconds.abs();
+      final h = absSec ~/ 3600;
+      final m = (absSec % 3600) ~/ 60;
+      final s = absSec % 60;
+      final mm = m.toString().padLeft(2, '0');
+      final ss = s.toString().padLeft(2, '0');
+      countdownText = h > 0
+          ? '$h:$mm:$ss until delivery'
+          : '$mm:$ss until delivery';
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(_kRadius),
+        boxShadow: _kCardShadow,
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.35),
+          width: 1.2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header ──────────────────────────────────────────────────────
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: headerColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(_kRadius),
+                topRight: Radius.circular(_kRadius),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.subscriptions_rounded,
+                    color: accentColor,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Subscription • ${meal.mealTime}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: accentColor,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${meal.day}, ${meal.date}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF000000),
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Countdown chip
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: accentColor.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.timer_rounded, size: 13, color: accentColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        countdownText,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: accentColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Dish Items ───────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Dishes',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF9E9E9E),
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ...meal.foodDetails.map(
+                  (dish) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 11,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7F8FA),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFEEEEEE)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: Colors.deepPurple.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              Icons.restaurant_menu_rounded,
+                              color: Colors.deepPurple.shade400,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              dish.isNotEmpty ? dish : 'To be confirmed',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1A1A2E),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Delivery Time ────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.access_time_rounded,
+                    color: Colors.orange.shade600,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Scheduled Delivery',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.orange.shade800,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        meal.time,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: const Color.fromARGB(255, 111, 39, 1),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurple.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      meal.thaliType,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.deepPurple.shade600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // ── Customer & Kitchen Info ──────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _infoChip(
+                    icon: Icons.person_rounded,
+                    label: meal.userName.isNotEmpty
+                        ? meal.userName
+                        : 'Customer',
+                    color: Colors.teal.shade600,
+                    bgColor: Colors.teal.shade50,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _infoChip(
+                    icon: Icons.storefront_rounded,
+                    label: meal.kitchenName,
+                    color: Colors.indigo.shade600,
+                    bgColor: Colors.indigo.shade50,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Delivery Address ─────────────────────────────────────────────
+          if (meal.deliveryAddress.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE3F2FD),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFBBDEFB)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.location_on_rounded,
+                    color: Color(0xFF1976D2),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Delivery Address',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1565C0),
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          meal.deliveryAddress,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF1976D2),
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoChip({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required Color bgColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ─── Order Card ──────────────────────────────────────────────────────────────
 
   /// Formats a Firestore [Timestamp] into e.g. "25 Feb 2026  •  06:32 PM"
@@ -466,6 +908,10 @@ class OrderScreen extends StatelessWidget {
 
   Widget _orderCard({required Map orderData}) {
     final String status = orderData['order_status'] ?? '';
+    final String rawId = orderData['order_id']?.toString() ?? '';
+    final String displayId = rawId.isNotEmpty
+        ? (rawId.length > 8 ? rawId.substring(0, 8) : rawId).toUpperCase()
+        : '—';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -502,7 +948,7 @@ class OrderScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Order #${orderData['order_id'] ?? '—'}',
+                        'Order #$displayId',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -1147,6 +1593,11 @@ class AllOrdersPage extends StatelessWidget {
 
   Widget _orderCard({required Map orderData}) {
     final String status = orderData['order_status'] ?? '';
+    final String rawId = orderData['order_id']?.toString() ?? '';
+    final String displayId = rawId.isNotEmpty
+        ? (rawId.length > 8 ? rawId.substring(0, 8) : rawId).toUpperCase()
+        : '—';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -1180,7 +1631,7 @@ class AllOrdersPage extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Order #${orderData['order_id'] ?? '—'}',
+                        'Order #$displayId',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,

@@ -130,7 +130,10 @@ class _MenuScreenState extends State<MenuScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.to(() => AddDishScreen(), arguments: [true, '']),
+        onPressed: () {
+          dmc.clearDishForm();
+          Get.to(() => AddDishScreen(), arguments: [true, '']);
+        },
         backgroundColor: _kPrimary,
         elevation: 6,
         highlightElevation: 3,

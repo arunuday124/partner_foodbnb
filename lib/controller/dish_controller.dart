@@ -191,11 +191,13 @@ class DishMenuController extends GetxController {
     if (dishnameController.text.trim().isEmpty ||
         dishPrice.text.trim().isEmpty ||
         selectedCategory.value.isEmpty ||
+        selectedThaliType.value.isEmpty ||
+        selectedPreference.value.isEmpty ||
         preparationTimeInput.text.trim().isEmpty ||
         currentQuantity.value <= 0) {
       Get.snackbar(
         'Required Fields',
-        'Please fill Dish Name, Price, Category, Prep Time, and ensure Quantity > 0',
+        'Please fill Dish Name, Price, Category, Food Type, Preference, Prep Time, and ensure Quantity > 0',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade800,
         colorText: Colors.white,
@@ -220,9 +222,7 @@ class DishMenuController extends GetxController {
         'price': int.parse(dishPrice.text.trim()),
         'category': selectedCategory.value,
         'preference': selectedPreference.value,
-        'thali_type': selectedCategory.value == 'Thali'
-            ? selectedThaliType.value
-            : '',
+        'thali_type': selectedThaliType.value,
         'created_at': DateTime.now(),
         "qnt_available": currentQuantity.value,
         'qnt_total': currentQuantity.value,
@@ -288,11 +288,13 @@ class DishMenuController extends GetxController {
     if (dishnameController.text.trim().isEmpty ||
         dishPrice.text.trim().isEmpty ||
         selectedCategory.value.isEmpty ||
+        selectedThaliType.value.isEmpty ||
+        selectedPreference.value.isEmpty ||
         preparationTimeInput.text.trim().isEmpty ||
         currentQuantity.value <= 0) {
       Get.snackbar(
         'Required Fields',
-        'Please fill Dish Name, Price, Category, Prep Time, and ensure Quantity > 0',
+        'Please fill Dish Name, Price, Category, Food Type, Preference, Prep Time, and ensure Quantity > 0',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade800,
         colorText: Colors.white,
@@ -316,9 +318,7 @@ class DishMenuController extends GetxController {
         'price': int.parse(dishPrice.text.trim()),
         'category': selectedCategory.value,
         'preference': selectedPreference.value,
-        'thali_type': selectedCategory.value == 'Thali'
-            ? selectedThaliType.value
-            : '',
+        'thali_type': selectedThaliType.value,
         "qnt_available": currentQuantity.value,
         'ingredients': ingredientsList.toList(),
         'preparation_time': preparationTimeInput.text.trim(),

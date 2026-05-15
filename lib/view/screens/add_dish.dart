@@ -64,6 +64,7 @@ class AddDishScreen extends StatelessWidget {
   Widget _buildImageThumbnail({
     required Widget child,
     required VoidCallback onRemove,
+    VoidCallback? onTap,
     bool isFirst = false,
   }) {
     return Container(
@@ -81,9 +82,12 @@ class AddDishScreen extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: SizedBox(width: 110, height: 110, child: child),
+          GestureDetector(
+            onTap: onTap,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: SizedBox(width: 110, height: 110, child: child),
+            ),
           ),
           if (isFirst)
             Positioned(
@@ -133,6 +137,45 @@ class AddDishScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showImagePreview(Widget imageWidget) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => Get.back(),
+              child: Container(
+                color: Colors.black.withOpacity(0.85),
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
+            InteractiveViewer(minScale: 0.5, maxScale: 5.0, child: imageWidget),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: GestureDetector(
+                onTap: () => Get.back(),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 28),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      useSafeArea: false,
     );
   }
 
@@ -200,11 +243,14 @@ class AddDishScreen extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                Text(" *",
-                    style: TextStyle(
-                        color: Colors.red.shade700,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                Text(
+                  " *",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 8),
@@ -256,11 +302,14 @@ class AddDishScreen extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                Text(" *",
-                    style: TextStyle(
-                        color: Colors.red.shade700,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                Text(
+                  " *",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 8),
@@ -290,11 +339,14 @@ class AddDishScreen extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                Text(" *",
-                    style: TextStyle(
-                        color: Colors.red.shade700,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                Text(
+                  " *",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 8),
@@ -317,70 +369,76 @@ class AddDishScreen extends StatelessWidget {
                 ],
                 onChanged: (value) {
                   dmc.selectedCategory.value = value ?? '';
-                  // Reset thali type when switching away from Thali
-                  if (value != 'Thali') {
-                    dmc.selectedThaliType.value = '';
-                  }
                 },
               ),
             ),
 
-            // Thali Type — only visible when "Thali" is selected
-            Obx(() {
-              if (dmc.selectedCategory.value != 'Thali') {
-                return const SizedBox.shrink();
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Thali Type",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
+            // Food Type — always visible
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                const Text(
+                  "Food Type",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
                   ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    value: dmc.selectedThaliType.value.isEmpty
-                        ? null
-                        : dmc.selectedThaliType.value,
-                    decoration: InputDecoration(
-                      hintText: 'Select Thali Type',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: "Basic", child: Text("Basic")),
-                      DropdownMenuItem(
-                        value: "Standard",
-                        child: Text("Standard"),
-                      ),
-                      DropdownMenuItem(
-                        value: "Premium",
-                        child: Text("Premium"),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      dmc.selectedThaliType.value = value ?? '';
-                    },
+                ),
+                Text(
+                  " *",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                value: dmc.selectedThaliType.value.isEmpty
+                    ? null
+                    : dmc.selectedThaliType.value,
+                decoration: InputDecoration(
+                  hintText: 'Select Food Type',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(value: "Basic", child: Text("Basic")),
+                  DropdownMenuItem(value: "Standard", child: Text("Standard")),
+                  DropdownMenuItem(value: "Premium", child: Text("Premium")),
                 ],
-              );
-            }),
+                onChanged: (value) {
+                  dmc.selectedThaliType.value = value ?? '';
+                },
+              ),
+            ),
 
             //preference
             SizedBox(height: 20),
-            const Text(
-              "Preference",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
+            Row(
+              children: [
+                const Text(
+                  "Preference",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  " *",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 8),
             Obx(
@@ -532,11 +590,14 @@ class AddDishScreen extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                Text(" *",
-                    style: TextStyle(
-                        color: Colors.red.shade700,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                Text(
+                  " *",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ],
             ),
             TextField(
@@ -566,11 +627,14 @@ class AddDishScreen extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                Text(" *",
-                    style: TextStyle(
-                        color: Colors.red.shade700,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                Text(
+                  " *",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 8),
@@ -671,6 +735,9 @@ class AddDishScreen extends StatelessWidget {
                       final url = entry.value;
                       return _buildImageThumbnail(
                         isFirst: index == 0,
+                        onTap: () => _showImagePreview(
+                          BunnyCdnImage(storageUrl: url, fit: BoxFit.contain),
+                        ),
                         child: BunnyCdnImage(
                           storageUrl: url,
                           width: 110,
@@ -687,6 +754,9 @@ class AddDishScreen extends StatelessWidget {
                       final path = entry.value;
                       return _buildImageThumbnail(
                         isFirst: existingImages.isEmpty && index == 0,
+                        onTap: () => _showImagePreview(
+                          Image.file(File(path), fit: BoxFit.contain),
+                        ),
                         child: Image.file(
                           File(path),
                           fit: BoxFit.cover,

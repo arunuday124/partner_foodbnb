@@ -22,6 +22,7 @@ class DishModel {
   final String ownerName;
   final String ownerprofileImage;
   final bool isAvailable;
+  final String thaliType; // Food Type (Basic, Standard, Premium)
 
   DishModel({
     required this.dishId,
@@ -48,6 +49,7 @@ class DishModel {
     required this.ownerName,
     required this.ownerprofileImage,
     required this.isAvailable,
+    required this.thaliType,
   });
 
   /// Firestore -> Dart
@@ -75,6 +77,7 @@ class DishModel {
       ownerName: map['owner_name'] ?? 'unknown',
       ownerprofileImage: map['owner_profile_image'] ?? 'unknown',
       isAvailable: map['is_available'] ?? true,
+      thaliType: map['thali_type'] ?? '',
     );
   }
 
@@ -110,6 +113,7 @@ class DishModel {
       'owner_profile_image': ownerprofileImage,
 
       'is_available': isAvailable,
+      'thali_type': thaliType,
     };
   }
 }
